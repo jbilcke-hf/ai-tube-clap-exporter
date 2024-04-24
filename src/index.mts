@@ -25,7 +25,15 @@ app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
 app.get("/", async (req, res) => {
   res.status(200)
-  res.write("This API is a component of the Clap-to-MP4 rendering service provided by AiTube. It is used for instance by the Stories Factory.")
+  res.write(`<html>
+  <head></head>
+  <body>
+    <p style="color: black; font-family: monospace;">
+      This API is a component of the Clap-to-MP4 rendering service provided by AiTube.<br/>
+      It is used for instance by the Stories Factory.
+    </p>
+  </body>
+<html>`)
   res.end()
 })
 
