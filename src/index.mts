@@ -4,6 +4,8 @@ import { Blob } from "buffer"
 
 import { parseClap } from "./core/clap/parseClap.mts"
 import { ClapProject } from "./core/clap/types.mts"
+import { clapToTmpVideoFilePath } from "./main.mts"
+import { deleteFile } from "./core/files/deleteFile.mts"
 
 const app = express()
 const port = 7860
@@ -49,10 +51,23 @@ app.post("/", async (req, res) => {
   req.on("end", async () => {
     let clapProject: ClapProject
     try {
-      let fileData = Buffer.concat(data);
-      const clapBlob = new Blob([fileData]);
-      clapProject = await parseClap(clapBlob);
-      console.log("got a clap project!:", clapProject)
+      let fileData = Buffer.concat(data)
+
+      const clap = await parseClap(new Blob([fileData]));
+      console.log("got a clap project:", clapProject)
+
+      const {
+        tmpWorkDir,
+        outputFilePath,
+      } = await clapToTmpVideoFilePath({ clap })
+      console.log("got an output file at:", outputFilePath)
+
+      res.download(outputFilePath, async () => {
+        // clean-up after ourselves (we clear the whole tmp directory)
+        await deleteFile(tmpWorkDir)
+        console.log("cleared the temporary folder")
+      })
+      return
     } catch (err) {
       console.error(`failed to parse the request: ${err}`)
       res.status(500)
@@ -60,10 +75,6 @@ app.post("/", async (req, res) => {
       res.end()
       return
     }
-    // TODO read the mp4 file and convert it to 
-    res.status(200)
-    res.write("TODO")
-    res.end()
   });
 })
 

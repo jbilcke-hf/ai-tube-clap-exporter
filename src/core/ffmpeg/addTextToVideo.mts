@@ -1,23 +1,37 @@
-import { createTextOverlayImage } from "./createTextOverlayImage.mts";
-import { addImageToVideo } from "./addImageToVideo.mts";
+import { createTextOverlayImage } from "./createTextOverlayImage.mts"
+import { addImageToVideo } from "./addImageToVideo.mts"
+import { deleteFile } from "../files/deleteFile.mts"
 
-export async function addTextToVideo() {
+export async function addTextToVideo({
+  inputVideoPath,
+  outputVideoPath,
+  text,
+  width,
+  height,
+}: {
+  inputVideoPath: string
+  outputVideoPath: string
+  text: string
+  width: number
+  height: number
+}): Promise<string> {
   
-  const inputVideoPath = "/Users/jbilcke/Downloads/use_me.mp4"
-
-  const { filePath } = await createTextOverlayImage({
-    text: "This tech is hot 🥵",
-    width: 1024 ,
-    height: 576,
+  const { filePath: temporaryImageOverlayFilePath } = await createTextOverlayImage({
+    text,
+    width,
+    height,
   })
-  console.log("filePath:", filePath)
 
-  /*
+  console.log("addTextToVideo: temporaryImageOverlayFilePath:", temporaryImageOverlayFilePath)
+
   const pathToVideo = await addImageToVideo({
     inputVideoPath,
-    inputImagePath: filePath,
+    inputImagePath: temporaryImageOverlayFilePath,
+    outputVideoPath,
   })
 
-  console.log("pathToVideo:", pathToVideo)
-  */
+  await deleteFile(temporaryImageOverlayFilePath)
+
+  console.log("addTextToVideo: outputVideoPath:", outputVideoPath)
+  return outputVideoPath
 }
