@@ -23,8 +23,14 @@ process.on('uncaughtException', (error: Error) => {
 app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
+app.get("/", async (req, res) => {
+  res.status(200)
+  res.write("This API is a component of the Clap-to-MP4 rendering service provided by AiTube. It is used for instance by the Stories Factory.")
+  res.end()
+})
+
 // the export robot has only one job: to export .clap files
-app.post("/export", async (req, res) => {
+app.post("/", async (req, res) => {
       
   let data: Uint8Array[] = [];
 
