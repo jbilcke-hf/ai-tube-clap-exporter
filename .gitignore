@@ -1,0 +1,13 @@
+samples
+node_modules
+*.log
+*.bin
+.DS_Store
+.venv
+*.mp4
+*.wav
+*.mp3
+*.webp
+sandbox
+scripts
+.env.local
