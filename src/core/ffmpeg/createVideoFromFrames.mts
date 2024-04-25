@@ -1,5 +1,4 @@
-import { promises as fs } from "node:fs"
-import { writeFile, readFile } from "node:fs/promises"
+import { access, rm, mkdir, writeFile, readFile } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 
@@ -39,7 +38,7 @@ export async function createVideoFromFrames({
   asBase64?: boolean;
 }): Promise<string> {
   // Ensure the input directory exists
-  await fs.access(inputFramesDirectory);
+  await access(inputFramesDirectory);
 
 
   // Construct the input frame pattern
@@ -48,7 +47,7 @@ export async function createVideoFromFrames({
 
   // Create a temporary working directory
   const tempDir = path.join(os.tmpdir(), uuidv4());
-  await fs.mkdir(tempDir);
+  await mkdir(tempDir);
 
    
   let inputVideoToUseAsAudioFilePath = "";
@@ -65,7 +64,7 @@ export async function createVideoFromFrames({
   }
 
   if (debug) {
-    console.log("      createVideoFromFraes(): inputVideoToUseAsAudioFilePath = ", inputVideoToUseAsAudioFilePath)
+    console.log("      createVideoFromFrames(): inputVideoToUseAsAudioFilePath = ", inputVideoToUseAsAudioFilePath)
   }
 
 
@@ -73,7 +72,7 @@ export async function createVideoFromFrames({
   // Also, if provided, check that the audio source file exists
   if (inputVideoToUseAsAudioFilePath) {
     try {
-      await fs.access(inputVideoToUseAsAudioFilePath)
+      await access(inputVideoToUseAsAudioFilePath)
       const info = await getMediaInfo(inputVideoToUseAsAudioFilePath)
       if (info.hasAudio) {
         canUseInputVideoForAudio = true
@@ -108,7 +107,7 @@ export async function createVideoFromFrames({
       .input(inputFramePattern)
       .inputFPS(framesPerSecond)
       .outputOptions([
-        // by default ffmpeg doesn't tell us why it fails to convet
+        // by default ffmpeg doesn't tell us why it fails to convert
         // so we need to force it to spit everything out
         "-loglevel", "debug",
 
@@ -165,7 +164,7 @@ export async function createVideoFromFrames({
           reject(new Error(`Error loading the video file: ${error}`));
         } finally {
           // Clean up temporary files
-          await fs.rm(tempDir, { recursive: true });
+          await rm(tempDir, { recursive: true });
         }
       });
   });
