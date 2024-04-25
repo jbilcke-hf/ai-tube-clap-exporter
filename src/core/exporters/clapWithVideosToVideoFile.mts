@@ -38,7 +38,9 @@ export async function clapWithVideosToVideoFile({
     )
 
     const interfaceSegments = clap.segments.filter(s =>
-      s.assetUrl.startsWith("data:text/") &&
+      // nope, not all interfaces asset have the assetUrl
+      // although in the future.. we might want to
+      // s.assetUrl.startsWith("data:text/") &&
       s.category === "interface" &&
       startOfSegment1IsWithinSegment2(s, segment)
     )
@@ -50,7 +52,9 @@ export async function clapWithVideosToVideoFile({
       await addTextToVideo({
         inputVideoPath: videoSegmentFilePath,
         outputVideoPath: videoSegmentWithOverlayFilePath,
-        text: atob(extractBase64(interfaceSegment.assetUrl).data),
+        text: interfaceSegment.assetUrl.startsWith("data:text/")
+          ? atob(extractBase64(interfaceSegment.assetUrl).data)
+          : interfaceSegment.assetUrl,
         width: clap.meta.width,
         height: clap.meta.height,
       })
