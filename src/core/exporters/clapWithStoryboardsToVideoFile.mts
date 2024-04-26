@@ -1,6 +1,7 @@
 import { join } from "node:path"
 
 import { ClapProject, ClapSegment } from "@aitube/clap"
+
 import { concatenateVideosWithAudio } from "../ffmpeg/concatenateVideosWithAudio.mts"
 import { writeBase64ToFile } from "../files/writeBase64ToFile.mts"
 import { getRandomDirectory } from "../files/getRandomDirectory.mts"
