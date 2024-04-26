@@ -53,7 +53,7 @@ app.post("/", async (req, res) => {
     try {
       let fileData = Buffer.concat(data)
 
-      const clap = await parseClap(new Blob([fileData]));
+      const clap: ClapProject = await parseClap(new Blob([fileData]));
       console.log("got a clap project:", clapProject)
 
       const {
