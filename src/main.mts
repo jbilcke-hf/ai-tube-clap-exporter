@@ -1,6 +1,7 @@
 import { join } from "node:path"
 
-import { ClapProject } from "./core/clap/types.mts";
+import { ClapProject } from "@aitube/clap";
+
 import { concatenateAudio } from "./core/ffmpeg/concatenateAudio.mts";
 import { concatenateVideosWithAudio } from "./core/ffmpeg/concatenateVideosWithAudio.mts";
 import { writeBase64ToFile } from "./core/files/writeBase64ToFile.mts";

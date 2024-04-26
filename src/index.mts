@@ -1,9 +1,9 @@
 
-import express from "express"
-import { Blob } from "buffer"
+import { Blob } from "node:buffer"
 
-import { parseClap } from "./core/clap/parseClap.mts"
-import { ClapProject } from "./core/clap/types.mts"
+import express from "express"
+import { parseClap, ClapProject } from "@aitube/clap"
+
 import { clapToTmpVideoFilePath } from "./main.mts"
 import { deleteFile } from "./core/files/deleteFile.mts"
 

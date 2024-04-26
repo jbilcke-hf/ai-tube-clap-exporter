@@ -1,6 +1,6 @@
 import { join } from "node:path"
 
-import { ClapProject } from "../clap/types.mts"
+import { ClapProject, ClapSegment } from "@aitube/clap"
 import { concatenateVideosWithAudio } from "../ffmpeg/concatenateVideosWithAudio.mts"
 import { writeBase64ToFile } from "../files/writeBase64ToFile.mts"
 import { getRandomDirectory } from "../files/getRandomDirectory.mts"
@@ -8,7 +8,6 @@ import { addTextToVideo } from "../ffmpeg/addTextToVideo.mts"
 import { startOfSegment1IsWithinSegment2 } from "../utils/startOfSegment1IsWithinSegment2.mts"
 import { deleteFile } from "../files/deleteFile.mts"
 import { extractBase64 } from "../base64/extractBase64.mts"
-import { ClapSegment } from "../clap/types.mts"
 import { imageToVideoBase64 } from "../ffmpeg/imageToVideoBase64.mts"
 
 export async function clapWithStoryboardsToVideoFile({
