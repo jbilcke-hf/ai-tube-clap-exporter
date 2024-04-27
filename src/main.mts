@@ -56,6 +56,9 @@ export async function clapToTmpVideoFilePath({
       videoSegments,
       outputDir,
     })
+
+    console.log(`clapToTmpVideoFilePath: called clapWithVideosToVideoFile, got concatenatedData = ${JSON.stringify(concatenatedData, null, 2)}`)
+  
     videoFilePaths = concatenatedData.videoFilePaths
   } else if (canUseStoryboards) {
     const concatenatedData = await clapWithStoryboardsToVideoFile({
@@ -63,12 +66,15 @@ export async function clapToTmpVideoFilePath({
       storyboardSegments,
       outputDir,
     })
+
+    console.log(`clapToTmpVideoFilePath: called clapWithStoryboardsToVideoFile, got concatenatedData = ${JSON.stringify(concatenatedData, null, 2)}`)
+  
     videoFilePaths = concatenatedData.videoFilePaths
   } else {
     throw new Error(`the provided Clap doesn't contain any video or storyboard`)
   }
 
-  console.log(`clapToTmpVideoFilePath: calling concatenateVideos over ${videoFilePaths.length} video chunks`)
+  console.log(`clapToTmpVideoFilePath: calling concatenateVideos over ${videoFilePaths.length} video chunks: ${JSON.stringify(videoFilePaths, null, 2)}`)
   
   const concatenatedVideosNoMusic = await concatenateVideos({
     videoFilePaths,
