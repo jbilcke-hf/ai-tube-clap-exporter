@@ -114,15 +114,6 @@ export async function clapToTmpVideoFilePath({
     console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
   }
 
-  console.log(`clapToTmpVideoFilePath: calling concatenateVideosWithAudio with: ${JSON.stringify({
-    output: join(outputDir, `final_video.${format}`),
-    format,
-    audioFilePath: concatenatedAudio ? concatenatedAudio?.filepath : "",
-    videoFilePaths: [concatenatedVideosNoMusic.filepath],
-    // videos are silent, so they can stay at 0
-    videoTracksVolume: 0.85,
-    audioTrackVolume: 0.15, // let's keep the music volume low
-  }, null, 2)}`)
   
   const finalFilePathOfVideoWithMusic = await concatenateVideosWithAudio({
     output: join(outputDir, `final_video.${format}`),

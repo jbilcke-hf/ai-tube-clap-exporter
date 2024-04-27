@@ -43,6 +43,18 @@ export async function imageToVideoBase64({
 
   outputDir = outputDir || (await getRandomDirectory())
 
+
+  console.log(`imagetoVideoBase64 called with: ${JSON.stringify({
+    inputImageInBase64: inputImageInBase64?.slice(0, 50),
+    outputFilePath,
+    width,
+    height,
+    outputVideoDurationInMs,
+    outputDir,
+    clearOutputDirAtTheEnd,
+    outputVideoFormat,
+  }, null, 2)}`)
+
   // Decode the Base64 image and write it to a temporary file.
   const base64Data = inputImageInBase64.substring(inputImageInBase64.indexOf(',') + 1);
   const buffer = Buffer.from(base64Data, 'base64');
@@ -53,9 +65,12 @@ export async function imageToVideoBase64({
   outputFilePath = outputFilePath || path.join(outputDir, `output.${outputVideoFormat}`);
   const durationInSeconds = outputVideoDurationInMs / 1000;
 
+  console.log("durationInSeconds: " + durationInSeconds)
+  
   // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
     ffmpeg(inputImagePath)
+      .inputOptions(['-loop 1'])  // Loop the input image
       .outputOptions([
         `-t ${durationInSeconds}`,
         `-r ${fps}`,
