@@ -6,6 +6,8 @@ import { parseClap, ClapProject } from "@aitube/clap"
 
 import { clapToTmpVideoFilePath } from "./main.mts"
 import { deleteFile } from "./core/files/deleteFile.mts"
+import queryString from "query-string"
+import { defaultExportFormat, SupportedExportFormat } from "./core/ffmpeg/concatenateVideosWithAudio.mts"
 
 const app = express()
 const port = 7860
@@ -39,9 +41,21 @@ app.get("/", async (req, res) => {
   res.end()
 })
 
+
 // the export robot has only one job: to export .clap files
 app.post("/", async (req, res) => {
       
+  const qs = queryString.parseUrl(req.url || "")
+  const query = (qs || {}).query
+
+  let format: SupportedExportFormat = defaultExportFormat
+  try {
+    format = decodeURIComponent(query?.f?.toString() || defaultExportFormat).trim() as SupportedExportFormat
+    if (format !== "mp4" && format !== "webm") {
+      format = defaultExportFormat
+    }
+  } catch (err) {}
+
   let data: Uint8Array[] = [];
 
   req.on("data", (chunk) => {
@@ -59,8 +73,8 @@ app.post("/", async (req, res) => {
       const {
         tmpWorkDir,
         outputFilePath,
-      } = await clapToTmpVideoFilePath({ clap })
-      console.log("got an output file at:", outputFilePath)
+      } = await clapToTmpVideoFilePath({ clap, format })
+      console.log(`got an output ${format} file at:`, outputFilePath)
 
       res.download(outputFilePath, async () => {
         // clean-up after ourselves (we clear the whole tmp directory)

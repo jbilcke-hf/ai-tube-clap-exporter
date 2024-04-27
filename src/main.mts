@@ -3,13 +3,14 @@ import { join } from "node:path"
 import { ClapProject } from "@aitube/clap";
 
 import { concatenateAudio } from "./core/ffmpeg/concatenateAudio.mts";
-import { concatenateVideosWithAudio } from "./core/ffmpeg/concatenateVideosWithAudio.mts";
+import { concatenateVideosWithAudio, defaultExportFormat, SupportedExportFormat } from "./core/ffmpeg/concatenateVideosWithAudio.mts";
 import { writeBase64ToFile } from "./core/files/writeBase64ToFile.mts";
 import { concatenateVideos } from "./core/ffmpeg/concatenateVideos.mts"
 import { deleteFilesWithName } from "./core/files/deleteFileWithName.mts"
 import { getRandomDirectory } from "./core/files/getRandomDirectory.mts";
 import { clapWithVideosToVideoFile } from "./core/exporters/clapWithVideosToVideoFile.mts";
 import { clapWithStoryboardsToVideoFile } from "./core/exporters/clapWithStoryboardsToVideoFile.mts";
+
 
 /**
  * Generate a .mp4 video inside a directory (if none is provided, it will be created in /tmp)
@@ -19,11 +20,13 @@ import { clapWithStoryboardsToVideoFile } from "./core/exporters/clapWithStorybo
  */
 export async function clapToTmpVideoFilePath({
   clap,
+  format = defaultExportFormat,
   outputDir = "",
   clearTmpFilesAtEnd = false
 }: {
   clap: ClapProject
 
+  format?: SupportedExportFormat
   outputDir?: string
 
   // if you leave this to false, you will have to clear files yourself
@@ -90,7 +93,8 @@ export async function clapToTmpVideoFilePath({
   })
 
   const finalFilePathOfVideoWithMusic = await concatenateVideosWithAudio({
-    output: join(outputDir, `final_video.mp4`),
+    output: join(outputDir, `final_video.${format}`),
+    format,
     audioFilePath: concatenatedAudio.filepath,
     videoFilePaths: [concatenatedVideosNoMusic.filepath],
     // videos are silent, so they can stay at 0

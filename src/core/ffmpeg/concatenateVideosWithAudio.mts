@@ -10,8 +10,12 @@ import { getMediaInfo } from "./getMediaInfo.mts";
 import { removeTemporaryFiles } from "../files/removeTmpFiles.mts";
 import { addBase64Header } from "../base64/addBase64.mts";
 
-type ConcatenateVideoWithAudioOptions = {
+export type SupportedExportFormat = "mp4" | "webm"
+export const defaultExportFormat = "mp4"
+
+export type ConcatenateVideoWithAudioOptions = {
   output?: string;
+  format?: SupportedExportFormat;
   audioTrack?: string; // base64
   audioFilePath?: string; // path
   videoTracks?: string[]; // base64
@@ -24,6 +28,7 @@ type ConcatenateVideoWithAudioOptions = {
 
 export const concatenateVideosWithAudio = async ({
   output,
+  format = defaultExportFormat,
   audioTrack = "",
   audioFilePath = "",
   videoTracks = [],
@@ -65,7 +70,7 @@ export const concatenateVideosWithAudio = async ({
     const tempMediaInfo = await getMediaInfo(tempFilePath.filepath);
     const hasOriginalAudio = tempMediaInfo.hasAudio;
 
-    const finalOutputFilePath = output || path.join(tempDir, `${uuidv4()}.mp4`);
+    const finalOutputFilePath = output || path.join(tempDir, `${uuidv4()}.${format}`);
 
     // Begin ffmpeg command configuration
     let cmd = ffmpeg();
@@ -133,7 +138,7 @@ export const concatenateVideosWithAudio = async ({
           if (asBase64) {
             try {
               const outputBuffer = await fs.readFile(finalOutputFilePath);
-              const outputBase64 = addBase64Header(outputBuffer.toString("base64"), "mp4")
+              const outputBase64 = addBase64Header(outputBuffer.toString("base64"), format)
               resolve(outputBase64);
             } catch (error) {
               reject(new Error(`Error reading output video file: ${(error as Error).message}`));
