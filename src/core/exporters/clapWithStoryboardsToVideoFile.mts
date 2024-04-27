@@ -112,7 +112,7 @@ export async function clapWithStoryboardsToVideoFile({
     videoFilePaths.push(storyboardSegmentVideoFilePath)
   }
 
-  console.log(`clapWithStoryboardsToVideoFile: videoFilePaths: ${JSON.stringify(videoFilePaths, null, 2)}`)
+  // console.log(`clapWithStoryboardsToVideoFile: videoFilePaths: ${JSON.stringify(videoFilePaths, null, 2)}`)
     
   return {
     outputDir,

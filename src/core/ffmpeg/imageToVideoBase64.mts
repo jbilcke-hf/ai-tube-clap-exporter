@@ -43,7 +43,6 @@ export async function imageToVideoBase64({
 
   outputDir = outputDir || (await getRandomDirectory())
 
-
   console.log(`imagetoVideoBase64 called with: ${JSON.stringify({
     inputImageInBase64: inputImageInBase64?.slice(0, 50),
     outputFilePath,
@@ -66,7 +65,7 @@ export async function imageToVideoBase64({
   const durationInSeconds = outputVideoDurationInMs / 1000;
 
   console.log("durationInSeconds: " + durationInSeconds)
-  
+
   // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
     ffmpeg(inputImagePath)

@@ -57,7 +57,7 @@ export async function clapToTmpVideoFilePath({
       outputDir,
     })
 
-    console.log(`clapToTmpVideoFilePath: called clapWithVideosToVideoFile, got concatenatedData = ${JSON.stringify(concatenatedData, null, 2)}`)
+    // console.log(`clapToTmpVideoFilePath: called clapWithVideosToVideoFile, got concatenatedData = ${JSON.stringify(concatenatedData, null, 2)}`)
   
     videoFilePaths = concatenatedData.videoFilePaths
   } else if (canUseStoryboards) {
@@ -67,7 +67,7 @@ export async function clapToTmpVideoFilePath({
       outputDir,
     })
 
-    console.log(`clapToTmpVideoFilePath: called clapWithStoryboardsToVideoFile, got concatenatedData = ${JSON.stringify(concatenatedData, null, 2)}`)
+    // console.log(`clapToTmpVideoFilePath: called clapWithStoryboardsToVideoFile, got concatenatedData = ${JSON.stringify(concatenatedData, null, 2)}`)
   
     videoFilePaths = concatenatedData.videoFilePaths
   } else {
@@ -124,7 +124,7 @@ export async function clapToTmpVideoFilePath({
     videoTracksVolume: concatenatedAudio ? 0.85 : 1.0,
     audioTrackVolume: concatenatedAudio ? 0.15 : 0.0, // let's keep the music volume low
   })
-  console.log(`clapToTmpVideoFilePath: finalFilePathOfVideoWithMusic = ${finalFilePathOfVideoWithMusic}`)
+  // console.log(`clapToTmpVideoFilePath: finalFilePathOfVideoWithMusic = ${finalFilePathOfVideoWithMusic}`)
   
   if (clearTmpFilesAtEnd) {
     // we delete all the temporary assets
