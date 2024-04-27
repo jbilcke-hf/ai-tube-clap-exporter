@@ -20,6 +20,7 @@ export async function addTextToVideo({
     text,
     width,
     height,
+    fontSize: 5
   })
 
   console.log("addTextToVideo: temporaryImageOverlayFilePath:", temporaryImageOverlayFilePath)
