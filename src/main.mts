@@ -66,17 +66,24 @@ export async function clapToTmpVideoFilePath({
     throw new Error(`the provided Clap doesn't contain any video or storyboard`)
   }
 
+  console.log(`clapToTmpVideoFilePath: calling concatenateVideos over ${videoFilePaths.length} video chunks`)
+  
   const concatenatedVideosNoMusic = await concatenateVideos({
     videoFilePaths,
     output: join(outputDir, `tmp_asset_concatenated_videos.mp4`)
   })
 
+  console.log(`clapToTmpVideoFilePath: concatenatedVideosNoMusic`, concatenatedVideosNoMusic)
+  
   const audioTracks: string[] = []
 
   const musicSegments = clap.segments.filter(s =>
       s.category === "music" &&
       s.assetUrl.startsWith("data:audio/")
   )
+
+  console.log(`clapToTmpVideoFilePath: got ${musicSegments.length} music segments in total`)
+  
   for (const segment of musicSegments) {
     audioTracks.push(
       await writeBase64ToFile(
@@ -86,12 +93,25 @@ export async function clapToTmpVideoFilePath({
     )
   }
 
+  console.log(`clapToTmpVideoFilePath: calling concatenateAudio over ${audioTracks.length} audio tracks`)
+  
   const concatenatedAudio = await concatenateAudio({
     output: join(outputDir, `tmp_asset_concatenated_audio.wav`),
     audioTracks,
     crossfadeDurationInSec: 2 // 2 seconds
   })
-
+  console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
+  
+  console.log(`clapToTmpVideoFilePath: calling concatenateVideosWithAudio with: ${JSON.stringify({
+    output: join(outputDir, `final_video.${format}`),
+    format,
+    audioFilePath: concatenatedAudio.filepath,
+    videoFilePaths: [concatenatedVideosNoMusic.filepath],
+    // videos are silent, so they can stay at 0
+    videoTracksVolume: 0.85,
+    audioTrackVolume: 0.15, // let's keep the music volume low
+  }, null, 2)}`)
+  
   const finalFilePathOfVideoWithMusic = await concatenateVideosWithAudio({
     output: join(outputDir, `final_video.${format}`),
     format,
@@ -101,11 +121,17 @@ export async function clapToTmpVideoFilePath({
     videoTracksVolume: 0.85,
     audioTrackVolume: 0.15, // let's keep the music volume low
   })
-
+  console.log(`clapToTmpVideoFilePath: finalFilePathOfVideoWithMusic = ${finalFilePathOfVideoWithMusic}`)
+  
   if (clearTmpFilesAtEnd) {
     // we delete all the temporary assets
     await deleteFilesWithName(outputDir, `tmp_asset_`)
   }
+
+  console.log(`clapToTmpVideoFilePath: returning ${JSON.stringify( {
+    tmpWorkDir: outputDir,
+    outputFilePath: finalFilePathOfVideoWithMusic
+  }, null, 2)}`)
 
   return {
     tmpWorkDir: outputDir,

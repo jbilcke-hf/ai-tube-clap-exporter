@@ -47,6 +47,8 @@ export async function clapWithStoryboardsToVideoFile({
       s.category === "interface" &&
       startOfSegment1IsWithinSegment2(s, segment)
     )
+    console.log(`clapWithStoryboardsToVideoFile: got ${interfaceSegments.length} interface segments for shot ${segment.id} [${segment.startTimeInMs}:${segment.endTimeInMs}]`)
+
     const interfaceSegment = interfaceSegments.at(0)
     if (interfaceSegment) {
       // here we are free to use mp4, since this is an internal intermediary format
@@ -67,11 +69,15 @@ export async function clapWithStoryboardsToVideoFile({
       storyboardSegmentVideoFilePath = videoSegmentWithOverlayFilePath
     }
 
+
     const dialogueSegments = clap.segments.filter(s =>
       s.assetUrl.startsWith("data:audio/") &&
       s.category === "dialogue" &&
       startOfSegment1IsWithinSegment2(s, segment)
     )
+
+    console.log(`clapWithStoryboardsToVideoFile: got ${dialogueSegments.length} dialogue segments for shot ${segment.id} [${segment.startTimeInMs}:${segment.endTimeInMs}]`)
+    
     const dialogueSegment = dialogueSegments.at(0)
     if (dialogueSegment) {
       extractBase64(dialogueSegment.assetUrl)
@@ -103,6 +109,8 @@ export async function clapWithStoryboardsToVideoFile({
     videoFilePaths.push(storyboardSegmentVideoFilePath)
   }
 
+  console.log(`clapWithStoryboardsToVideoFile: videoFilePaths: ${JSON.stringify(videoFilePaths, null, 2)}`)
+    
   return {
     outputDir,
     videoFilePaths,

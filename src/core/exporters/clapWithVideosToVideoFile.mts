@@ -101,6 +101,8 @@ export async function clapWithVideosToVideoFile({
     videoFilePaths.push(videoSegmentFilePath)
   }
 
+  console.log(`clapWithVideosToVideoFile: videoFilePaths: ${JSON.stringify(videoFilePaths, null, 2)}`)
+  
   return {
     outputDir,
     videoFilePaths,
