@@ -2,7 +2,7 @@ import { join } from "node:path"
 
 import { ClapProject } from "@aitube/clap";
 
-import { concatenateAudio } from "./core/ffmpeg/concatenateAudio.mts";
+import { concatenateAudio, ConcatenateAudioOutput } from "./core/ffmpeg/concatenateAudio.mts";
 import { concatenateVideosWithAudio, defaultExportFormat, SupportedExportFormat } from "./core/ffmpeg/concatenateVideosWithAudio.mts";
 import { writeBase64ToFile } from "./core/files/writeBase64ToFile.mts";
 import { concatenateVideos } from "./core/ffmpeg/concatenateVideos.mts"
@@ -101,19 +101,23 @@ export async function clapToTmpVideoFilePath({
     )
   }
 
-  console.log(`clapToTmpVideoFilePath: calling concatenateAudio over ${audioTracks.length} audio tracks`)
-  
-  const concatenatedAudio = await concatenateAudio({
-    output: join(outputDir, `tmp_asset_concatenated_audio.wav`),
-    audioTracks,
-    crossfadeDurationInSec: 2 // 2 seconds
-  })
-  console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
-  
+  let concatenatedAudio: ConcatenateAudioOutput | undefined = undefined
+
+  if (audioTracks.length > 0) {
+    console.log(`clapToTmpVideoFilePath: calling concatenateAudio over ${audioTracks.length} audio tracks`)
+    
+    concatenatedAudio = await concatenateAudio({
+      output: join(outputDir, `tmp_asset_concatenated_audio.wav`),
+      audioTracks,
+      crossfadeDurationInSec: 2 // 2 seconds
+    })
+    console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
+  }
+
   console.log(`clapToTmpVideoFilePath: calling concatenateVideosWithAudio with: ${JSON.stringify({
     output: join(outputDir, `final_video.${format}`),
     format,
-    audioFilePath: concatenatedAudio.filepath,
+    audioFilePath: concatenatedAudio ? concatenatedAudio?.filepath : "",
     videoFilePaths: [concatenatedVideosNoMusic.filepath],
     // videos are silent, so they can stay at 0
     videoTracksVolume: 0.85,
@@ -123,11 +127,11 @@ export async function clapToTmpVideoFilePath({
   const finalFilePathOfVideoWithMusic = await concatenateVideosWithAudio({
     output: join(outputDir, `final_video.${format}`),
     format,
-    audioFilePath: concatenatedAudio.filepath,
+    audioFilePath: concatenatedAudio ? concatenatedAudio?.filepath : undefined,
     videoFilePaths: [concatenatedVideosNoMusic.filepath],
     // videos are silent, so they can stay at 0
-    videoTracksVolume: 0.85,
-    audioTrackVolume: 0.15, // let's keep the music volume low
+    videoTracksVolume: concatenatedAudio ? 0.85 : 1.0,
+    audioTrackVolume: concatenatedAudio ? 0.15 : 0.0, // let's keep the music volume low
   })
   console.log(`clapToTmpVideoFilePath: finalFilePathOfVideoWithMusic = ${finalFilePathOfVideoWithMusic}`)
   
