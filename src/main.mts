@@ -39,29 +39,31 @@ export async function clapToTmpVideoFilePath({
 
   outputDir = outputDir || (await getRandomDirectory())
 
-  const videoFilePaths: string[] = []
-
   const videoSegments = clap.segments.filter(s => s.category === "video" && s.assetUrl.startsWith("data:video/"))
   const storyboardSegments = clap.segments.filter(s => s.category === "storyboard" && s.assetUrl.startsWith("data:image/"))
 
   const canUseVideos = videoSegments.length > 0
   const canUseStoryboards = !canUseVideos && storyboardSegments.length > 0
 
+  let videoFilePaths: string[] = []
+
   // two possibilities:
   // we can either generate from the video files, or from the storyboards
   // the storyboard video will be a bit more boring, but at least it should process faster
   if (canUseVideos) {
-    await clapWithVideosToVideoFile({
+    const concatenatedData = await clapWithVideosToVideoFile({
       clap,
       videoSegments,
       outputDir,
     })
+    videoFilePaths = concatenatedData.videoFilePaths
   } else if (canUseStoryboards) {
-    await clapWithStoryboardsToVideoFile({
+    const concatenatedData = await clapWithStoryboardsToVideoFile({
       clap,
       storyboardSegments,
       outputDir,
     })
+    videoFilePaths = concatenatedData.videoFilePaths
   } else {
     throw new Error(`the provided Clap doesn't contain any video or storyboard`)
   }

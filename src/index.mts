@@ -68,7 +68,7 @@ app.post("/", async (req, res) => {
       let fileData = Buffer.concat(data)
 
       const clap: ClapProject = await parseClap(new Blob([fileData]));
-      console.log("got a clap project:", clapProject)
+      console.log("got a clap project:", clap)
 
       const {
         tmpWorkDir,
