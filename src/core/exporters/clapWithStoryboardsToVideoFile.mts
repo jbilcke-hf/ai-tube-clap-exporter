@@ -35,6 +35,9 @@ export async function clapWithStoryboardsToVideoFile({
     await imageToVideoBase64({
       inputImageInBase64: segment.assetUrl,
       outputFilePath: storyboardSegmentVideoFilePath,
+      width: clap.meta.width,
+      height: clap.meta.height,
+      outputVideoDurationInMs: 5000, // TODO this should be computed from the voice? or we can resize videos, toos
       outputDir,
       clearOutputDirAtTheEnd: false, // <- must stay false or else we lose everything!
       outputVideoFormat: "mp4",
