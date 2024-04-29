@@ -132,7 +132,7 @@ export const concatenateVideosWithAudio = async ({
       // If no additional audio is provided, simply copy the video stream
       ffmpegCommand = ffmpegCommand.outputOptions([
         '-c:v', 'copy',
-        hasOriginalAudio ? '-c:a' : '-an', // If original audio exists, copy it; otherwise, indicate no audio
+        hasOriginalAudio ? '-c:a copy' : '-an', // If original audio exists, copy it; otherwise, indicate no audio
       ]);
     }
 
