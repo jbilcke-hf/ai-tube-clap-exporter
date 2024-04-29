@@ -73,9 +73,9 @@ export async function storyboardSegmentToVideoFile({
   
   const dialogueSegment = dialogueSegments.at(0)
   if (dialogueSegment) {
-    extractBase64(dialogueSegment.assetUrl)
+    console.log(`dialogueSegment: ${dialogueSegment.assetUrl.slice(0, 60)}...`)
     const base64Info = extractBase64(dialogueSegment.assetUrl)
-
+    console.log(`dialogueSegment: format: is ${base64Info.mimetype} (.${base64Info.extension})`)
     const dialogueSegmentFilePath = await writeBase64ToFile(
       dialogueSegment.assetUrl,
       join(outputDir, `tmp_asset_${segment.id}_dialogue.${base64Info.extension}`)
