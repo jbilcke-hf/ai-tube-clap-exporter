@@ -88,6 +88,7 @@ export const concatenateVideosWithAudio = async ({
     // Begin ffmpeg command configuration
     let ffmpegCommand = ffmpeg();
 
+    
     ffmpegCommand = ffmpegCommand.addInput(tempFilePath.filepath);
  
     ffmpegCommand = ffmpegCommand.outputOptions('-loglevel', 'debug');
@@ -150,7 +151,9 @@ export const concatenateVideosWithAudio = async ({
 
     // Set up event handlers for ffmpeg processing
     const promise = new Promise<string>((resolve, reject) => {
-      ffmpegCommand.on('error', (err) => {
+      ffmpegCommand.on('start', function(commandLine) {
+        console.log('concatenateVideosWithAudio: Spawned Ffmpeg with command: ' + commandLine);
+      }).on('error', (err) => {
         console.error("concatenateVideosWithAudio: error during ffmpeg processing");
         console.error(err)
         reject(err);
