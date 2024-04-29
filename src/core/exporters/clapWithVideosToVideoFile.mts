@@ -73,7 +73,7 @@ export async function clapWithVideosToVideoFile({
     const dialogueSegment = dialogueSegments.at(0)
     if (dialogueSegment) {
       extractBase64(dialogueSegment.assetUrl)
-      const base64Info = extractBase64(segment.assetUrl)
+      const base64Info = extractBase64(dialogueSegment.assetUrl)
 
       const dialogueSegmentFilePath = await writeBase64ToFile(
         dialogueSegment.assetUrl,
