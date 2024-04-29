@@ -75,8 +75,8 @@ export async function createTextOverlayImage({
   })}</head>
   <body>
 
-    <!-- main content block (will be center in the middle of the screen) -->
-    <div class="content">
+    <!-- main container block -->
+    <div class="content ${textStyle}">
 
       <!-- main line of text -->
       <p class="${textStyle}">

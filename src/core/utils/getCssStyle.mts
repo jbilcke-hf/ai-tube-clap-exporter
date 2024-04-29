@@ -56,14 +56,12 @@ export function getCssStyle({
     height: ${height || "100vh"};
     overflow: hidden;
     margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 
-  .content {
-    width: 100%;
+    padding-top: ${py}vh;
+    padding-right: ${px}vh;
+    padding-bottom: ${py}vh;
+    padding-left: ${px}vh;
+
     display: flex;
     flex-direction: column;
     align-items: ${
@@ -74,16 +72,15 @@ export function getCssStyle({
     };
   }
 
+  .content {
+    text-align: ${horizontalPosition};
+  }
+
   p {
     font-family: "${fontFamily}", sans-serif;
     font-size: ${fontSize}vh;
     font-weight: ${fontWeight};
     border-radius: 2vh;
-    padding-top: ${py}vh;
-    padding-right: ${px}vh;
-    padding-bottom: ${py}vh;
-    padding-left: ${px}vh;
-    text-align: ${horizontalPosition};
 
     /*
     normally we should use those webkit features:
@@ -95,7 +92,7 @@ export function getCssStyle({
 
     */
     text-shadow:
-    ${0.35}vh ${0.35}vh ${0.3}vh #000,
+      ${0.35}vh ${0.35}vh ${0.3}vh #000,
       -${0.35}vh ${0.35}vh ${0.3}vh #000,
       -${0.35}vh -${0.35}vh 0 #000,
       ${0.35}vh -${0.35}vh 0 #000;

@@ -46,7 +46,7 @@ export const concatenateVideosWithAudio = async ({
 
     if (audioTrack && audioTrack.length > 0) {
       const analysis = extractBase64(audioTrack)
-      console.log(`concatenateVideosWithAudio: writing down an audio file (${analysis.extension}) from the supplied base64 track`)
+      // console.log(`concatenateVideosWithAudio: writing down an audio file (${analysis.extension}) from the supplied base64 track`)
       audioFilePath = path.join(tempDir, `audio.${analysis.extension}`);
       await writeBase64ToFile(addBase64Header(audioTrack, analysis.extension), audioFilePath);
     }
@@ -60,7 +60,7 @@ export const concatenateVideosWithAudio = async ({
       const analysis = extractBase64(audioTrack)
       const videoFilePath = path.join(tempDir, `video${++i}.${analysis.extension}`);
 
-      console.log(`concatenateVideosWithAudio: writing down a video file (${analysis.extension}) from the supplied base64 track`)
+      // console.log(`concatenateVideosWithAudio: writing down a video file (${analysis.extension}) from the supplied base64 track`)
 
       await writeBase64ToFile(addBase64Header(track, analysis.extension), videoFilePath);
 
@@ -69,21 +69,21 @@ export const concatenateVideosWithAudio = async ({
 
     videoFilePaths = videoFilePaths.filter((video) => existsSync(video))
 
-    console.log("concatenateVideosWithAudio: concatenating videos (without audio)..")
+    // console.log("concatenateVideosWithAudio: concatenating videos (without audio)..")
     const tempFilePath = await concatenateVideos({
       videoFilePaths,
     })
-    console.log(`concatenateVideosWithAudio: tempFilePath = ${JSON.stringify(tempFilePath, null, 2)}`)
+    // console.log(`concatenateVideosWithAudio: tempFilePath = ${JSON.stringify(tempFilePath, null, 2)}`)
 
     // Check if the concatenated video has audio or not
     const tempMediaInfo = await getMediaInfo(tempFilePath.filepath);
     const hasOriginalAudio = tempMediaInfo.hasAudio;
 
-    console.log(`concatenateVideosWithAudio: hasOriginalAudio = ${hasOriginalAudio}`)
+    // console.log(`concatenateVideosWithAudio: hasOriginalAudio = ${hasOriginalAudio}`)
 
     const finalOutputFilePath = output || path.join(tempDir, `${uuidv4()}.${format}`);
 
-    console.log(`concatenateVideosWithAudio: finalOutputFilePath = ${finalOutputFilePath}`)
+    // console.log(`concatenateVideosWithAudio: finalOutputFilePath = ${finalOutputFilePath}`)
 
     // Begin ffmpeg command configuration
     let ffmpegCommand = ffmpeg();
@@ -95,12 +95,12 @@ export const concatenateVideosWithAudio = async ({
 
     // If additional audio is provided, add audio to ffmpeg command
     if (typeof audioFilePath === "string" && audioFilePath.length > 0) {
-      console.log(`concatenateVideosWithAudio: adding an audio file path: ${audioFilePath}`)
+      // console.log(`concatenateVideosWithAudio: adding an audio file path: ${audioFilePath}`)
 
       ffmpegCommand = ffmpegCommand.addInput(audioFilePath);
       // If the input video already has audio, we will mix it with additional audio
       if (hasOriginalAudio) {
-        console.log(`concatenateVideosWithAudio: case 1: additional audio was provided, and we already have audio: we mix`)
+        // console.log(`concatenateVideosWithAudio: case 1: additional audio was provided, and we already have audio: we mix`)
 
         const filterComplex = `
           [0:a]volume=${videoTracksVolume}[a0];
@@ -116,7 +116,7 @@ export const concatenateVideosWithAudio = async ({
           '-c:a', 'aac',
         ]);
       } else {
-        console.log(`concatenateVideosWithAudio: case 2: additional audio was provided, but we don't already have audio: we overwrite`)
+        // console.log(`concatenateVideosWithAudio: case 2: additional audio was provided, but we don't already have audio: we overwrite`)
 
         // If the input video has no audio, just use the additional audio as is
         ffmpegCommand = ffmpegCommand.outputOptions([
@@ -127,7 +127,7 @@ export const concatenateVideosWithAudio = async ({
         ]);
       }
     } else {
-      console.log(`concatenateVideosWithAudio: case 3: no additional audio provided, we leave the audio as-is`)
+      // console.log(`concatenateVideosWithAudio: case 3: no additional audio provided, we leave the audio as-is`)
 
       // If no additional audio is provided, simply copy the video stream
       ffmpegCommand = ffmpegCommand.outputOptions([
@@ -183,7 +183,7 @@ export const concatenateVideosWithAudio = async ({
   } catch (error) {
     throw new Error(`Failed to assemble video: ${(error as Error).message}`);
   } finally {
-    console.log(`concatenateVideosWithAudio: deleting ${JSON.stringify([...videoFilePaths].concat(audioFilePath), null, 2)}`)
+    // console.log(`concatenateVideosWithAudio: deleting ${JSON.stringify([...videoFilePaths].concat(audioFilePath), null, 2)}`)
     await removeTemporaryFiles([...videoFilePaths].concat(audioFilePath))
   }
 };
