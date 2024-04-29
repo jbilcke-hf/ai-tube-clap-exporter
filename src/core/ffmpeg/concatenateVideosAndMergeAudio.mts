@@ -129,6 +129,7 @@ export const concatenateVideosAndMergeAudio = async ({
   } catch (error) {
     throw new Error(`Failed to assemble video: ${(error as Error).message}`);
   } finally {
+    // console.log(``)
     await removeTemporaryFiles([...videoFilePaths, ...audioFilePaths])
   }
 };

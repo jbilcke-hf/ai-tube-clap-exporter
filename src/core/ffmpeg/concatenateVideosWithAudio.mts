@@ -180,6 +180,7 @@ export const concatenateVideosWithAudio = async ({
   } catch (error) {
     throw new Error(`Failed to assemble video: ${(error as Error).message}`);
   } finally {
+    console.log(`concatenateVideosWithAudio: deleting ${JSON.stringify([...videoFilePaths].concat(audioFilePath), null, 2)}`)
     await removeTemporaryFiles([...videoFilePaths].concat(audioFilePath))
   }
 };
