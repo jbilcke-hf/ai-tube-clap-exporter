@@ -18,18 +18,31 @@ export type TextOverlayFontWeight =
   | 800
   | 900
 
+export type TextOverlayPosition =
+  | "start"
+  | "center"
+  | "end"
+
 export function getCssStyle({
   width,
   height,
   fontSize,
   fontFamily,
   fontWeight,
+  horizontalPosition,
+  verticalPosition,
+  px,
+  py,
 }: {
   width?: number | string
   height?: number | string
   fontSize: number
   fontFamily: TextOverlayFont
   fontWeight: TextOverlayFontWeight
+  horizontalPosition: TextOverlayPosition
+  verticalPosition: TextOverlayPosition
+  px: number
+  py: number
 }) {
 
   return `
@@ -52,8 +65,13 @@ export function getCssStyle({
   .content {
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: ${
+      horizontalPosition
+    };
+    justify-content: ${
+      verticalPosition
+    };
   }
 
   p {
@@ -61,8 +79,11 @@ export function getCssStyle({
     font-size: ${fontSize}vh;
     font-weight: ${fontWeight};
     border-radius: 2vh;
-    padding: 5vh;
-    text-align: center;
+    padding-top: ${py}vh;
+    padding-right: ${px}vh;
+    padding-bottom: ${py}vh;
+    padding-left: ${px}vh;
+    text-align: ${horizontalPosition};
 
     /*
     normally we should use those webkit features:

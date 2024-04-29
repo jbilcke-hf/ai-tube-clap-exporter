@@ -18,14 +18,19 @@ export async function addTextToVideo({
   
   const { filePath: temporaryImageOverlayFilePath } = await createTextOverlayImage({
     text,
+    textStyle: "outline", // or "highlight"
+    fontSize: 4.5,
+    horizontalPosition: "center",
+    verticalPosition: "end",
+    px: 4,
+    py: 8,
     width,
     height,
-    fontSize: 5
   })
 
-  console.log("addTextToVideo: temporaryImageOverlayFilePath:", temporaryImageOverlayFilePath)
+  // console.log("addTextToVideo: temporaryImageOverlayFilePath:", temporaryImageOverlayFilePath)
 
-  const pathToVideo = await addImageToVideo({
+  await addImageToVideo({
     inputVideoPath,
     inputImagePath: temporaryImageOverlayFilePath,
     outputVideoPath,
@@ -33,6 +38,6 @@ export async function addTextToVideo({
 
   await deleteFile(temporaryImageOverlayFilePath)
 
-  console.log("addTextToVideo: outputVideoPath:", outputVideoPath)
+  // console.log("addTextToVideo: outputVideoPath:", outputVideoPath)
   return outputVideoPath
 }
