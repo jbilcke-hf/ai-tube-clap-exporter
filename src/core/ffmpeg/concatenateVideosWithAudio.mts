@@ -61,7 +61,7 @@ export const concatenateVideosWithAudio = async ({
 
     videoFilePaths = videoFilePaths.filter((video) => existsSync(video))
 
-    // console.log("concatenating videos (without audio)..")
+    console.log("concatenateVideosWithAudio: concatenating videos (without audio)..")
     const tempFilePath = await concatenateVideos({
       videoFilePaths,
     })
@@ -71,6 +71,8 @@ export const concatenateVideosWithAudio = async ({
     const hasOriginalAudio = tempMediaInfo.hasAudio;
 
     const finalOutputFilePath = output || path.join(tempDir, `${uuidv4()}.${format}`);
+
+    console.log(`concatenateVideosWithAudio: finalOutputFilePath = ${finalOutputFilePath}`)
 
     // Begin ffmpeg command configuration
     let cmd = ffmpeg();
@@ -113,8 +115,8 @@ export const concatenateVideosWithAudio = async ({
       ]);
     }
 
-    /*
-    console.log("DEBUG:", {
+
+    console.log("concatenateVideosWithAudio: DEBUG:", {
       videoTracksVolume,
       audioTrackVolume,
       videoFilePaths,
@@ -125,12 +127,12 @@ export const concatenateVideosWithAudio = async ({
       // additionalAudioVolume,
       finalOutputFilePath
      })
-     */
+
   
     // Set up event handlers for ffmpeg processing
     const promise = new Promise<string>((resolve, reject) => {
       cmd.on('error', (err) => {
-        console.error("    Error during ffmpeg processing:", err.message);
+        console.error("concatenateVideosWithAudio:    Error during ffmpeg processing:", err.message);
         reject(err);
       }).on('end', async () => {
         // When ffmpeg finishes processing, resolve the promise with file info
