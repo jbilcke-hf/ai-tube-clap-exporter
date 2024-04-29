@@ -146,6 +146,7 @@ export async function clapToTmpVideoFilePath({
   
   if (clearTmpFilesAtEnd) {
     // we delete all the temporary assets
+    console.log(`clapToTmpVideoFilePath: calling deleteFilesWithName(${outputDir}, 'tmp_asset_')`)
     await deleteFilesWithName(outputDir, `tmp_asset_`)
   }
 

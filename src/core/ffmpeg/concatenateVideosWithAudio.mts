@@ -93,10 +93,14 @@ export const concatenateVideosWithAudio = async ({
     ffmpegCommand = ffmpegCommand.outputOptions('-loglevel', 'debug');
 
     // If additional audio is provided, add audio to ffmpeg command
-    if (audioFilePath) {
+    if (typeof audioFilePath === "string" && audioFilePath.length > 0) {
+      console.log(`concatenateVideosWithAudio: adding an audio file path: ${audioFilePath}`)
+
       ffmpegCommand = ffmpegCommand.addInput(audioFilePath);
       // If the input video already has audio, we will mix it with additional audio
       if (hasOriginalAudio) {
+        console.log(`concatenateVideosWithAudio: case 1: additional audio was provided, and we already have audio: we mix`)
+
         const filterComplex = `
           [0:a]volume=${videoTracksVolume}[a0];
           [1:a]volume=${audioTrackVolume}[a1];
@@ -111,6 +115,8 @@ export const concatenateVideosWithAudio = async ({
           '-c:a', 'aac',
         ]);
       } else {
+        console.log(`concatenateVideosWithAudio: case 2: additional audio was provided, but we don't already have audio: we overwrite`)
+
         // If the input video has no audio, just use the additional audio as is
         ffmpegCommand = ffmpegCommand.outputOptions([
           '-map', '0:v',
@@ -120,6 +126,8 @@ export const concatenateVideosWithAudio = async ({
         ]);
       }
     } else {
+      console.log(`concatenateVideosWithAudio: case 3: no additional audio provided, we leave the audio as-is`)
+
       // If no additional audio is provided, simply copy the video stream
       ffmpegCommand = ffmpegCommand.outputOptions([
         '-c:v', 'copy',
@@ -140,11 +148,11 @@ export const concatenateVideosWithAudio = async ({
       finalOutputFilePath
      })
 
-  
     // Set up event handlers for ffmpeg processing
     const promise = new Promise<string>((resolve, reject) => {
       ffmpegCommand.on('error', (err) => {
-        console.error("concatenateVideosWithAudio:    Error during ffmpeg processing:", err.message);
+        console.error("concatenateVideosWithAudio: error during ffmpeg processing");
+        console.error(err)
         reject(err);
       }).on('end', async () => {
         // When ffmpeg finishes processing, resolve the promise with file info
