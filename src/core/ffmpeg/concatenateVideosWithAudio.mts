@@ -9,6 +9,7 @@ import { writeBase64ToFile } from "../files/writeBase64ToFile.mts";
 import { getMediaInfo } from "./getMediaInfo.mts";
 import { removeTemporaryFiles } from "../files/removeTmpFiles.mts";
 import { addBase64Header } from "../base64/addBase64.mts";
+import { extractBase64 } from "../base64/extractBase64.mts";
 
 export type SupportedExportFormat = "mp4" | "webm"
 export const defaultExportFormat = "mp4"
@@ -44,9 +45,10 @@ export const concatenateVideosWithAudio = async ({
     await fs.mkdir(tempDir);
 
     if (audioTrack && audioTrack.length > 0) {
-      console.log("concatenateVideosWithAudio: writing down an audio file from the supplied base64 track")
-      audioFilePath = path.join(tempDir, `audio.wav`);
-      await writeBase64ToFile(addBase64Header(audioTrack, "wav"), audioFilePath);
+      const analysis = extractBase64(audioTrack)
+      console.log(`concatenateVideosWithAudio: writing down an audio file (${analysis.extension}) from the supplied base64 track`)
+      audioFilePath = path.join(tempDir, `audio.${analysis.extension}`);
+      await writeBase64ToFile(addBase64Header(audioTrack, analysis.extension), audioFilePath);
     }
 
     // Decode and concatenate base64 video tracks to temporary file
@@ -55,11 +57,12 @@ export const concatenateVideosWithAudio = async ({
       if (!track) { continue }
       // note: here we assume the input video is in mp4
       
-      const videoFilePath = path.join(tempDir, `video${++i}.mp4`);
+      const analysis = extractBase64(audioTrack)
+      const videoFilePath = path.join(tempDir, `video${++i}.${analysis.extension}`);
 
-      console.log("concatenateVideosWithAudio: writing down an audio file from the supplied base64 track")
+      console.log(`concatenateVideosWithAudio: writing down a video file (${analysis.extension}) from the supplied base64 track`)
 
-      await writeBase64ToFile(addBase64Header(track, "mp4"), videoFilePath);
+      await writeBase64ToFile(addBase64Header(track, analysis.extension), videoFilePath);
 
       videoFilePaths.push(videoFilePath);
     }
@@ -70,7 +73,7 @@ export const concatenateVideosWithAudio = async ({
     const tempFilePath = await concatenateVideos({
       videoFilePaths,
     })
-    console.log(`concatenateVideosWithAudio: tempFilePath = ${tempFilePath}`)
+    console.log(`concatenateVideosWithAudio: tempFilePath = ${JSON.stringify(tempFilePath, null, 2)}`)
 
     // Check if the concatenated video has audio or not
     const tempMediaInfo = await getMediaInfo(tempFilePath.filepath);

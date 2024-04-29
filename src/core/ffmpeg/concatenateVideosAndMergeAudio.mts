@@ -9,6 +9,7 @@ import { writeBase64ToFile } from "../files/writeBase64ToFile.mts";
 import { getMediaInfo } from "./getMediaInfo.mts";
 import { removeTemporaryFiles } from "../files/removeTmpFiles.mts";
 import { addBase64Header } from "../base64/addBase64.mts";
+import { extractBase64 } from "../base64/extractBase64.mts";
 
 type ConcatenateVideoAndMergeAudioOptions = {
   output?: string;
@@ -39,10 +40,11 @@ export const concatenateVideosAndMergeAudio = async ({
     await fs.mkdir(tempDir);
 
     let i = 0
-    for (const track of audioTracks) {
-      if (!track) { continue }
-      const audioFilePath = path.join(tempDir, `audio${++i}.wav`);
-      await writeBase64ToFile(addBase64Header(track, "wav"), audioFilePath);
+    for (const audioTrack of audioTracks) {
+      if (!audioTrack) { continue }
+      const analysis = extractBase64(audioTrack)
+      const audioFilePath = path.join(tempDir, `audio${++i}.${analysis.extension}`);
+      await writeBase64ToFile(addBase64Header(audioTrack, analysis.extension), audioFilePath);
       audioFilePaths.push(audioFilePath);
     }
     audioFilePaths = audioFilePaths.filter((audio) => existsSync(audio))
@@ -50,11 +52,13 @@ export const concatenateVideosAndMergeAudio = async ({
 
     // Decode and concatenate base64 video tracks to temporary file
     i = 0
-    for (const track of videoTracks) {
-      if (!track) { continue }
-      const videoFilePath = path.join(tempDir, `video${++i}.mp4`);
+    for (const videoTrack of videoTracks) {
+      if (!videoTrack) { continue }
 
-      await writeBase64ToFile(addBase64Header(track, "mp4"), videoFilePath);
+      const analysis = extractBase64(videoTrack)
+      const videoFilePath = path.join(tempDir, `video${++i}.${analysis.extension}`);
+
+      await writeBase64ToFile(addBase64Header(videoTrack, analysis.extension), videoFilePath);
 
       videoFilePaths.push(videoFilePath);
     }
