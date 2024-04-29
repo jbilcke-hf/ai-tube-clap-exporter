@@ -14,6 +14,7 @@ import { getRandomDirectory } from "../files/getRandomDirectory.mts";
  * @param width - Optional. Width of the output video.
  * @param height - Optional. Height of the output video.
  * @param fps - Optional. Frame rate of the output video.
+ * @param zoomInRatePerSecond - Optional. Zoom-in rate (by default 0.6, or which would zoom by 3% over 5 seconds)
  * 
  * @returns - A promise that resolves to the video as a Base64 encoded string.
  */
@@ -27,7 +28,8 @@ export async function imageToVideoBase64({
   codec = outputVideoFormat === "webm" ? "libvpx-vp9" : "libx264",
   width = 1920,
   height = 1080,
-  fps = 25
+  fps = 25,
+  zoomInRatePerSecond = 0.6
 }: {
   inputImageInBase64: string
   outputFilePath?: string
@@ -39,6 +41,7 @@ export async function imageToVideoBase64({
   width?: number
   height?: number
   fps?: number
+  zoomInRatePerSecond?: number
 }): Promise<string> {
 
   outputDir = outputDir || (await getRandomDirectory())
@@ -62,13 +65,13 @@ export async function imageToVideoBase64({
 
   // Set the path for the output video.
   outputFilePath = outputFilePath || path.join(outputDir, `output.${outputVideoFormat}`);
+  
   const durationInSeconds = outputVideoDurationInMs / 1000;
-
-  console.log("durationInSeconds: " + durationInSeconds)
 
   // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
-    ffmpeg(inputImagePath)
+
+    let ffmpegCommand = ffmpeg(inputImagePath)
       .inputOptions(['-loop 1'])  // Loop the input image
       .outputOptions([
         `-t ${durationInSeconds}`,
@@ -78,6 +81,14 @@ export async function imageToVideoBase64({
         '-tune stillimage',
         '-pix_fmt yuv420p'
       ])
+
+      // Apply zoompan filter only if zoom rate is greater than 0
+      if (zoomInRatePerSecond > 0) {
+        const totalZoomFactor = 1 + (zoomInRatePerSecond / 100) * durationInSeconds;
+        ffmpegCommand = ffmpegCommand.videoFilters(`zoompan=z='min(zoom+${zoomInRatePerSecond}/100,zoom*${totalZoomFactor})':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1`);
+      }
+      
+    return ffmpegCommand
       .on('end', () => resolve())
       .on('error', (err) => reject(err))
       .save(outputFilePath);
