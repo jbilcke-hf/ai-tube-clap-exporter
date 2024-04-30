@@ -81,6 +81,7 @@ export function getCssStyle({
     font-size: ${fontSize}vh;
     font-weight: ${fontWeight};
     border-radius: 2vh;
+    padding: 1vh;
 
     /*
     normally we should use those webkit features:

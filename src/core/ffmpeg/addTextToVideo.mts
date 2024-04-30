@@ -19,11 +19,11 @@ export async function addTextToVideo({
   const { filePath: temporaryImageOverlayFilePath } = await createTextOverlayImage({
     text,
     textStyle: "outline", // or "highlight"
-    fontSize: 2.5,
+    fontSize: 2,
     horizontalPosition: "center",
     verticalPosition: "end",
-    px: 3,
-    py: 14,
+    px: 1,
+    py: 8,
     width,
     height,
   })

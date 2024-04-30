@@ -25,7 +25,7 @@ export async function createTextOverlayImage({
   py = 10,
 
   width = 1024,
-  height = 576
+  height = 512
 }: {
   text?: string
 
