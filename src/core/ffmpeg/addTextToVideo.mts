@@ -23,7 +23,7 @@ export async function addTextToVideo({
     horizontalPosition: "center",
     verticalPosition: "end",
     px: 1,
-    py: 2,
+    py: 3,
     width,
     height,
   })
