@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apk update
 
 # for dev mode
-RUN apk add git git-lfs get procps htop vim nano
+RUN apk add git git-lfs procps htop vim nano
 
 RUN apk add alpine-sdk pkgconfig
 
