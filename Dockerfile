@@ -33,7 +33,7 @@ WORKDIR /app
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPYY --link --chown=user package*.json /app
+COPY --link --chown=user package*.json /app
 
 # make sure the .env is copied as well
 COPY --link --chown=user .env /app
