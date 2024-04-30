@@ -1,6 +1,7 @@
 import { rm, writeFile, readFile } from "node:fs/promises"
 import path from "node:path"
 
+import { v4 as uuidv4 } from "uuid"
 import ffmpeg from "fluent-ffmpeg"
 import { getRandomDirectory } from "@aitube/io"
 
@@ -60,11 +61,11 @@ export async function imageToVideoBase64({
   // Decode the Base64 image and write it to a temporary file.
   const base64Data = inputImageInBase64.substring(inputImageInBase64.indexOf(',') + 1);
   const buffer = Buffer.from(base64Data, 'base64');
-  const inputImagePath = path.join(outputDir, 'inputImage.png');
+  const inputImagePath = path.join(outputDir, `${uuidv4()}.png`)
   await writeFile(inputImagePath, buffer);
 
   // Set the path for the output video.
-  outputFilePath = outputFilePath || path.join(outputDir, `output.${outputVideoFormat}`);
+  outputFilePath = outputFilePath || path.join(outputDir, `output_${uuidv4()}.${outputVideoFormat}`);
   
   const durationInSeconds = outputVideoDurationInMs / 1000;
 
