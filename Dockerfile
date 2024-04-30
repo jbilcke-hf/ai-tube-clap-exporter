@@ -19,7 +19,7 @@ RUN apk add build-base gcompat udev ttf-opensans chromium
 RUN apk add ffmpeg
 
 # Set up a new user named "user" with user ID 1000
-RUN adduser --disabled-password --uid 1000 user
+RUN adduser --disabled-password --uid 1001 user
 
 # Switch to the "user" user
 USER user
@@ -33,15 +33,15 @@ WORKDIR /app
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY --link --chown=user package*.json /app
+COPY --chown=user package*.json /app
 
 # make sure the .env is copied as well
-COPY --link --chown=user .env /app
+COPY --chown=user .env /app
 
 RUN ffmpeg -version
 
 # Copy the current directory contents into the container at /app setting the owner to the user
-COPY --link --chown=user . $HOME/app
+COPY --chown=user . /app
 
 RUN npm ci
 
