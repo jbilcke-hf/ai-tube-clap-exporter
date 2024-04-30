@@ -8,5 +8,5 @@
     "allowImportingTsExtensions": true,
     "target": "es2022"
   },
-  "include": ["**/*.ts", "**/*.mts"],
+  "include": ["**/*.ts"],
 }

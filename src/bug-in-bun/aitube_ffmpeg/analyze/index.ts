@@ -1,0 +1,1 @@
+export { getMediaInfo } from "./getMediaInfo"

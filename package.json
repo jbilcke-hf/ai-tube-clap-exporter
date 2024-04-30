@@ -1,41 +1,33 @@
 {
   "name": "ai-tube-clap-exporter",
   "version": "1.0.0",
-  "description": "A service to convert a .clap (will all its assets) to a video file",
-  "main": "src/index.mts",
+  "description": "API service to convert a .clap (will all its assets) to a video file",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "tsx src/index.mts",
-    "dev": "tsx src/index.mts",
+    "start": "tsx src/index.ts",
+    "dev": "tsx src/index.ts",
     "docker": "npm run docker:build && npm run docker:run",
-    "docker:build": "docker build -t ai-tube-robot .",
-    "docker:run": "docker run -it -p 7860:7860 ai-tube-robot",
-    "alchemy:test": "tsx src/core/alchemy/test.mts"
+    "docker:build": "docker build -t ai-tube-clap-exporter .",
+    "docker:run": "docker run -it -p 7860:7860 ai-tube-clap-exporter"
   },
   "author": "Julian Bilcke <julian.bilcke@huggingface.co>",
   "license": "Apache License",
   "dependencies": {
     "@aitube/clap": "0.0.7",
+    "@aitube/encoders": "0.0.0",
+    "@aitube/io": "0.0.0",
     "@types/express": "^4.17.17",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/uuid": "^9.0.2",
     "dotenv": "^16.3.1",
-    "eventsource-parser": "^1.0.0",
     "express": "^4.18.2",
     "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^11.1.1",
-    "mime-types": "^2.1.35",
-    "node-fetch": "^3.3.1",
-    "puppeteer": "^22.7.0",
+    "puppeteer": "^22.7.1",
     "query-string": "^9.0.0",
     "sharp": "^0.33.3",
-    "temp-dir": "^3.0.0",
-    "ts-node": "^10.9.1",
-    "type-fest": "^4.8.2",
-    "uuid": "^9.0.0",
-    "yaml": "^2.4.1"
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
-    "@types/mime-types": "^2.1.4",
     "@types/node": "^20.12.7",
     "tsx": "^4.7.0"
   }
