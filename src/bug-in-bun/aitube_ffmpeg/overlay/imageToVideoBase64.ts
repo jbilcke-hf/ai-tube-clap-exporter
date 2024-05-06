@@ -114,9 +114,9 @@ export async function imageToVideoBase64({
   ].join(',');
   */
 
-  // hopefully this versionw orks betetr
+  // hopefully this version works betetr
   const videoFilters = [
-    `crop=${cropWidth}:${cropHeight}:${(originalWidth-cropWidth)/2}:${(originalHeight-cropHeight)/2}`,
+    `crop=${cropWidth}:${cropHeight}:${(originalWidth - cropWidth) / 2}:${(originalHeight - cropHeight) / 2}`,
     `zoompan=z='min(zoom+${(endZoom - startZoom) / framesTotal}, ${endZoom})':x='${xCenter}':y='${yCenter}':d=${fps}`,
   ].join(',');
 
@@ -139,7 +139,8 @@ export async function imageToVideoBase64({
   // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
     ffmpeg(inputImagePath)
-      .inputOptions(['-loop 1'])
+      // this is disabled to avoid repeating the zoom-in multiple times
+      // .inputOptions(['-loop 1'])
       .outputOptions([
         `-t ${durationInSeconds}`,
         `-r ${fps}`,
