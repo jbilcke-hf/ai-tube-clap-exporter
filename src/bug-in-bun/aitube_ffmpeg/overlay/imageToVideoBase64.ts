@@ -104,9 +104,20 @@ export async function imageToVideoBase64({
   const startZoom = 1;
   const endZoom = 1 + zoomInRatePerSecond * durationInSeconds;
   
+  /**
+  this version has an issue, the ken burns effect is too fast, and is repeated multiple times,
+  which is uncomfortable to watch
+  
   const videoFilters = [
     `crop=${cropWidth}:${cropHeight}:${(originalWidth - cropWidth) / 2}:${(originalHeight - cropHeight) / 2}`,
     `zoompan=z='if(lte(zoom,${endZoom}),zoom+${(endZoom - startZoom) / framesTotal},zoom)':x='${xCenter}':y='${yCenter}':d=${framesTotal/fps}`,
+  ].join(',');
+  */
+
+  // hopefully this versionw orks betetr
+  const videoFilters = [
+    `crop=${cropWidth}:${cropHeight}:${(originalWidth-cropWidth)/2}:${(originalHeight-cropHeight)/2}`,
+    `zoompan=z='min(zoom+${(endZoom - startZoom) / framesTotal}, ${endZoom})':x='${xCenter}':y='${yCenter}':d=${fps}`,
   ].join(',');
 
   console.log("imageToVideoBase64:", {
