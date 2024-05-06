@@ -83,6 +83,8 @@ export function getCssStyle({
     border-radius: 2vh;
     padding: 1vh;
 
+    margin-bottom: 2vh;
+
     /*
     normally we should use those webkit features:
     https://kinsta.com/blog/css-text-outline/
