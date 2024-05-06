@@ -30,7 +30,7 @@ export async function imageToVideoBase64({
   width = 1920,
   height = 1080,
   fps = 25,
-  zoomInRatePerSecond = 0.6
+  zoomInRatePerSecond = 0.2
 }: {
   inputImageInBase64: string
   outputFilePath?: string
