@@ -81,13 +81,24 @@ export async function imageToVideoBase64({
 
   if (originalAspect > targetAspect) {
     // Crop width to match target aspect
+    console.log("imageToVideoBase64 case 1")
     cropHeight = originalHeight;
     cropWidth = Math.floor(cropHeight * targetAspect);
   } else {
     // Crop height to match target aspect
+    console.log("imageToVideoBase64 case 2")
     cropWidth = originalWidth;
     cropHeight = Math.floor(cropWidth / targetAspect);
   }
+
+  console.log("imageToVideoBase64 debug:", {
+    originalWidth,
+    originalHeight,
+    originalAspect,
+    targetAspect,
+    cropHeight,
+    cropWidth,
+  })
 
   // Set the path for the output video.
   outputFilePath = outputFilePath || path.join(outputDir, `output_${uuidv4()}.${outputVideoFormat}`);
