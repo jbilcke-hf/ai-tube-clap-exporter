@@ -47,17 +47,6 @@ export async function imageToVideoBase64({
 
   outputDir = outputDir || (await getRandomDirectory())
 
-  console.log(`imagetoVideoBase64 called with: ${JSON.stringify({
-    inputImageInBase64: inputImageInBase64?.slice(0, 50),
-    outputFilePath,
-    width,
-    height,
-    outputVideoDurationInMs,
-    outputDir,
-    clearOutputDirAtTheEnd,
-    outputVideoFormat,
-  }, null, 2)}`)
-
   outputDir = outputDir || await getRandomDirectory();
 
   // Decode the Base64 image and write it to a temporary file.
@@ -104,23 +93,22 @@ export async function imageToVideoBase64({
   const startZoom = 1;
   const endZoom = 1 + zoomInRatePerSecond * durationInSeconds;
   
-  /**
-  this version has an issue, the ken burns effect is too fast, and is repeated multiple times,
-  which is uncomfortable to watch
-  
+  const zoomDurationFrames = Math.ceil(durationInSeconds * fps); // Total frames for the video
+
   const videoFilters = [
     `crop=${cropWidth}:${cropHeight}:${(originalWidth - cropWidth) / 2}:${(originalHeight - cropHeight) / 2}`,
-    `zoompan=z='if(lte(zoom,${endZoom}),zoom+${(endZoom - startZoom) / framesTotal},zoom)':x='${xCenter}':y='${yCenter}':d=${framesTotal/fps}`,
-  ].join(',');
-  */
-
-  // hopefully this version works betetr
-  const videoFilters = [
-    `crop=${cropWidth}:${cropHeight}:${(originalWidth - cropWidth) / 2}:${(originalHeight - cropHeight) / 2}`,
-    `zoompan=z='min(zoom+${(endZoom - startZoom) / framesTotal}, ${endZoom})':x='${xCenter}':y='${yCenter}':d=${fps}`,
+    `zoompan=z='min(zoom+${(endZoom - startZoom) / framesTotal}, ${endZoom})':x='${xCenter}':y='${yCenter}':d=${zoomDurationFrames}`
   ].join(',');
 
-  console.log("imageToVideoBase64:", {
+  console.log(`imagetoVideoBase64 called with: ${JSON.stringify({
+    inputImageInBase64: inputImageInBase64?.slice(0, 50),
+    outputFilePath,
+    width,
+    height,
+    outputVideoDurationInMs,
+    outputDir,
+    clearOutputDirAtTheEnd,
+    outputVideoFormat,
     originalWidth,
     originalHeight,
     originalAspect,
@@ -133,8 +121,9 @@ export async function imageToVideoBase64({
     yCenter,
     startZoom,
     endZoom,
+    zoomDurationFrames,
     videoFilters,
-  })
+  }, null, 2)}`)
 
   // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
