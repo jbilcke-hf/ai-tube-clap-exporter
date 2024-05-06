@@ -91,28 +91,41 @@ export async function imageToVideoBase64({
     cropHeight = Math.floor(cropWidth / targetAspect);
   }
 
-  console.log("imageToVideoBase64 debug:", {
-    originalWidth,
-    originalHeight,
-    originalAspect,
-    targetAspect,
-    cropHeight,
-    cropWidth,
-  })
-
   // Set the path for the output video.
   outputFilePath = outputFilePath || path.join(outputDir, `output_${uuidv4()}.${outputVideoFormat}`);
 
   // we want to create a smooth Ken Burns effect
   const durationInSeconds = outputVideoDurationInMs / 1000;
   const framesTotal = durationInSeconds * fps;
-  const startZoom = 1;
-  const endZoom = 1 + zoomInRatePerSecond * durationInSeconds;
+
   const xCenter = `iw/2-(iw/zoom/2)`;
   const yCenter = `ih/2-(ih/zoom/2)`;
 
-  // Process the image to video conversion using ffmpeg.
+  const startZoom = 1;
+  const endZoom = 1 + zoomInRatePerSecond * durationInSeconds;
+  
+  const videoFilters = [
+    `crop=${cropWidth}:${cropHeight}:${(originalWidth - cropWidth) / 2}:${(originalHeight - cropHeight) / 2}`,
+    `zoompan=z='if(lte(zoom,${endZoom}),zoom+${(endZoom - startZoom) / framesTotal},zoom)':x='${xCenter}':y='${yCenter}':d=${framesTotal/fps}`,
+  ].join(',');
 
+  console.log("imageToVideoBase64:", {
+    originalWidth,
+    originalHeight,
+    originalAspect,
+    targetAspect,
+    cropHeight,
+    cropWidth,
+    durationInSeconds,
+    framesTotal,
+    xCenter,
+    yCenter,
+    startZoom,
+    endZoom,
+    videoFilters,
+  })
+
+  // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
     ffmpeg(inputImagePath)
       .inputOptions(['-loop 1'])
@@ -124,7 +137,7 @@ export async function imageToVideoBase64({
         '-tune stillimage',
         '-pix_fmt yuv420p'
       ])
-      .videoFilters(`zoompan=z='zoom+${(endZoom - startZoom) / framesTotal}':x='${xCenter}':y='${yCenter}':d=1`)
+      .videoFilters(videoFilters)
       .on('start', commandLine => console.log('imageToVideoBase64: Spawned Ffmpeg with command: ' + commandLine))
       .on('end', () => resolve())
       .on('error', err => reject(err))
