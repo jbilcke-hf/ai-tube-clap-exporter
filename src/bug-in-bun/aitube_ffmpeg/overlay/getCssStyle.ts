@@ -59,7 +59,7 @@ export function getCssStyle({
 
     padding-top: ${py}vh;
     padding-right: ${px}vh;
-    padding-bottom: ${py}vh;
+    padding-bottom: ${py * 2}vh;
     padding-left: ${px}vh;
 
     display: flex;
@@ -82,8 +82,6 @@ export function getCssStyle({
     font-weight: ${fontWeight};
     border-radius: 2vh;
     padding: 1vh;
-
-    margin-bottom: 2vh;
 
     /*
     normally we should use those webkit features:
