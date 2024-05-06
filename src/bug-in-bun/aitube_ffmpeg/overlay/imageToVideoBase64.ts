@@ -70,12 +70,12 @@ export async function imageToVideoBase64({
 
   if (originalAspect > targetAspect) {
     // Crop width to match target aspect
-    console.log("imageToVideoBase64 case 1")
+    // console.log("imageToVideoBase64 case 1")
     cropHeight = originalHeight;
     cropWidth = Math.floor(cropHeight * targetAspect);
   } else {
     // Crop height to match target aspect
-    console.log("imageToVideoBase64 case 2")
+    // console.log("imageToVideoBase64 case 2")
     cropWidth = originalWidth;
     cropHeight = Math.floor(cropWidth / targetAspect);
   }
@@ -100,6 +100,7 @@ export async function imageToVideoBase64({
     `zoompan=z='min(zoom+${(endZoom - startZoom) / framesTotal}, ${endZoom})':x='${xCenter}':y='${yCenter}':d=${zoomDurationFrames}`
   ].join(',');
 
+  /*
   console.log(`imagetoVideoBase64 called with: ${JSON.stringify({
     inputImageInBase64: inputImageInBase64?.slice(0, 50),
     outputFilePath,
@@ -124,7 +125,8 @@ export async function imageToVideoBase64({
     zoomDurationFrames,
     videoFilters,
   }, null, 2)}`)
-
+  */
+ 
   // Process the image to video conversion using ffmpeg.
   await new Promise<void>((resolve, reject) => {
     ffmpeg(inputImagePath)
