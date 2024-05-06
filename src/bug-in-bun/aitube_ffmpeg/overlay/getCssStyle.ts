@@ -59,7 +59,7 @@ export function getCssStyle({
 
     padding-top: ${py}vh;
     padding-right: ${px}vh;
-    padding-bottom: ${py * 2}vh;
+    padding-bottom: ${py}vh;
     padding-left: ${px}vh;
 
     display: flex;
