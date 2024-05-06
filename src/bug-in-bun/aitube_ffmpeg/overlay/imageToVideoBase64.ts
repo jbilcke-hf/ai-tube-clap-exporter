@@ -73,8 +73,8 @@ export async function imageToVideoBase64({
     });
   });
 
-  const originalWidth = inputImageDetails.streams[0].width;
-  const originalHeight = inputImageDetails.streams[0].height;
+  const originalWidth = inputImageDetails.streams[0].width || width;
+  const originalHeight = inputImageDetails.streams[0].height || height;
   const originalAspect = originalWidth / originalHeight;
   const targetAspect = width / height;
   let cropWidth, cropHeight;
