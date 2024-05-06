@@ -58,48 +58,65 @@ export async function imageToVideoBase64({
     outputVideoFormat,
   }, null, 2)}`)
 
+  outputDir = outputDir || await getRandomDirectory();
+
   // Decode the Base64 image and write it to a temporary file.
   const base64Data = inputImageInBase64.substring(inputImageInBase64.indexOf(',') + 1);
   const buffer = Buffer.from(base64Data, 'base64');
-  const inputImagePath = path.join(outputDir, `${uuidv4()}.png`)
+  const inputImagePath = path.join(outputDir, `${uuidv4()}.png`);
   await writeFile(inputImagePath, buffer);
+
+  const inputImageDetails = await new Promise<ffmpeg.FfprobeData>((resolve, reject) => {
+    ffmpeg.ffprobe(inputImagePath, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  });
+
+  const originalWidth = inputImageDetails.streams[0].width;
+  const originalHeight = inputImageDetails.streams[0].height;
+  const originalAspect = originalWidth / originalHeight;
+  const targetAspect = width / height;
+  let cropWidth, cropHeight;
+
+  if (originalAspect > targetAspect) {
+    // Crop width to match target aspect
+    cropHeight = originalHeight;
+    cropWidth = Math.floor(cropHeight * targetAspect);
+  } else {
+    // Crop height to match target aspect
+    cropWidth = originalWidth;
+    cropHeight = Math.floor(cropWidth / targetAspect);
+  }
 
   // Set the path for the output video.
   outputFilePath = outputFilePath || path.join(outputDir, `output_${uuidv4()}.${outputVideoFormat}`);
-  
+
+  // we want to create a smooth Ken Burns effect
   const durationInSeconds = outputVideoDurationInMs / 1000;
+  const framesTotal = durationInSeconds * fps;
+  const startZoom = 1;
+  const endZoom = 1 + zoomInRatePerSecond * durationInSeconds;
+  const xCenter = `iw/2-(iw/zoom/2)`;
+  const yCenter = `ih/2-(ih/zoom/2)`;
 
   // Process the image to video conversion using ffmpeg.
-  await new Promise<void>((resolve, reject) => {
 
-    let ffmpegCommand = ffmpeg(inputImagePath)
-      .inputOptions(['-loop 1'])  // Loop the input image
+  await new Promise<void>((resolve, reject) => {
+    ffmpeg(inputImagePath)
+      .inputOptions(['-loop 1'])
       .outputOptions([
         `-t ${durationInSeconds}`,
         `-r ${fps}`,
-        `-s ${width}x${height}`, // set frame size
-        `-c:v ${codec}`, // set the codec
+        `-s ${width}x${height}`,
+        `-c:v ${codec}`,
         '-tune stillimage',
         '-pix_fmt yuv420p'
       ])
-
-    if (zoomInRatePerSecond > 0) {
-      const zoomIncreasePerSecond = zoomInRatePerSecond / 100;
-      const totalZoomFactor = 1 + (zoomIncreasePerSecond * durationInSeconds);
-      const framesTotal = durationInSeconds * fps;
-      const zoomPerFrame = zoomIncreasePerSecond / fps;
-    
-      const zoomFormula = `if(lte(zoom\\,${totalZoomFactor}),zoom+${zoomPerFrame}\\,zoom)`;
-    
-      ffmpegCommand = ffmpegCommand.videoFilters(`zoompan=z='${zoomFormula}':d=${framesTotal}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'`);
-    }
-
-    return ffmpegCommand
-      .on('start', function(commandLine) {
-        console.log('imageToVideoBase64: Spawned Ffmpeg with command: ' + commandLine);
-      })
+      .videoFilters(`zoompan=z='zoom+${(endZoom - startZoom) / framesTotal}':x='${xCenter}':y='${yCenter}':d=1`)
+      .on('start', commandLine => console.log('imageToVideoBase64: Spawned Ffmpeg with command: ' + commandLine))
       .on('end', () => resolve())
-      .on('error', (err) => reject(err))
+      .on('error', err => reject(err))
       .save(outputFilePath);
   });
 
