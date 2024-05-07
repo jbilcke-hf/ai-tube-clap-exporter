@@ -1,12 +1,10 @@
 import { join } from "node:path"
 
-import { ClapProject, ClapSegment } from "@aitube/clap"
+import { ClapProject, ClapSegment, ClapSegmentCategory, ClapSegmentFilteringMode, filterSegments } from "@aitube/clap"
 import { extractBase64 } from "@aitube/encoders"
 import { deleteFile, writeBase64ToFile } from "@aitube/io"
 // import { addTextToVideo, concatenateVideosWithAudio } from "@aitube/ffmpeg"
 import { addTextToVideo, concatenateVideosWithAudio } from "../../bug-in-bun/aitube_ffmpeg"
-
-import { startOfSegment1IsWithinSegment2 } from "../utils/startOfSegment1IsWithinSegment2"
 
 export async function videoSegmentToVideoFile({
   clap,
@@ -25,13 +23,13 @@ export async function videoSegmentToVideoFile({
     segment.assetUrl,
     join(outputDir, `tmp_asset_${segment.id}.${base64Info.extension}`)
   )
-  const interfaceSegments = clap.segments.filter(s =>
-    // nope, not all interfaces asset have the assetUrl
-    // although in the future.. we might want to
-    // s.assetUrl.startsWith("data:text/") &&
-    s.category === "interface" &&
-    startOfSegment1IsWithinSegment2(s, segment)
+  const interfaceSegments = filterSegments(
+    ClapSegmentFilteringMode.START,
+    segment,
+    clap.segments,
+    ClapSegmentCategory.INTERFACE
   )
+  
   const interfaceSegment = interfaceSegments.at(0)
   if (interfaceSegment) {
     // here we are free to use mp4, since this is an internal intermediary format
@@ -49,11 +47,14 @@ export async function videoSegmentToVideoFile({
     await deleteFile(videoSegmentFilePath)
     videoSegmentFilePath = videoSegmentWithOverlayFilePath
   }
-  const dialogueSegments = clap.segments.filter(s =>
-    s.assetUrl.startsWith("data:audio/") &&
-    s.category === "dialogue" &&
-    startOfSegment1IsWithinSegment2(s, segment)
-  )
+
+  const dialogueSegments = filterSegments(
+    ClapSegmentFilteringMode.START,
+    segment,
+    clap.segments,
+    ClapSegmentCategory.DIALOGUE
+  ).map(s => s.assetUrl.startsWith("data:audio/"))
+
   const dialogueSegment = dialogueSegments.at(0)
   if (dialogueSegment) {
     extractBase64(dialogueSegment.assetUrl)

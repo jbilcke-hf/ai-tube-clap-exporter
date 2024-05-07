@@ -1,6 +1,6 @@
 import { join } from "node:path"
 
-import { ClapProject } from "@aitube/clap"
+import { ClapProject, ClapSegmentCategory } from "@aitube/clap"
 import { deleteFilesWithName, getRandomDirectory, writeBase64ToFile } from "@aitube/io"
 import {
   concatenateAudio,
@@ -47,8 +47,8 @@ export async function clapToTmpVideoFilePath({
 
   outputDir = outputDir || (await getRandomDirectory())
 
-  const videoSegments = clap.segments.filter(s => s.category === "video" && s.assetUrl.startsWith("data:video/"))
-  const storyboardSegments = clap.segments.filter(s => s.category === "storyboard" && s.assetUrl.startsWith("data:image/"))
+  const videoSegments = clap.segments.filter(s => s.category === ClapSegmentCategory.VIDEO && s.assetUrl.startsWith("data:video/"))
+  const storyboardSegments = clap.segments.filter(s => s.category === ClapSegmentCategory.STORYBOARD && s.assetUrl.startsWith("data:image/"))
 
   const canUseVideos = videoSegments.length > 0
   const canUseStoryboards = !canUseVideos && storyboardSegments.length > 0
@@ -97,7 +97,7 @@ export async function clapToTmpVideoFilePath({
   const audioTracks: string[] = []
 
   const musicSegments = clap.segments.filter(s =>
-      s.category === "music" &&
+      s.category === ClapSegmentCategory.MUSIC &&
       s.assetUrl.startsWith("data:audio/")
   )
 

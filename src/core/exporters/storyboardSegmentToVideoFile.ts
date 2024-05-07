@@ -1,12 +1,10 @@
 import { join } from "node:path"
 
-import { ClapProject, ClapSegment } from "@aitube/clap"
+import { ClapProject, ClapSegment, ClapSegmentCategory, ClapSegmentFilteringMode, filterSegments } from "@aitube/clap"
 import { extractBase64 } from "@aitube/encoders"
 import { deleteFile, writeBase64ToFile } from "@aitube/io"
 //import { addTextToVideo, concatenateVideosWithAudio, imageToVideoBase64 } from  "@aitube/ffmpeg"
 import { addTextToVideo, concatenateVideosWithAudio, imageToVideoBase64 } from  "../../bug-in-bun/aitube_ffmpeg"
-
-import { startOfSegment1IsWithinSegment2 } from "../utils/startOfSegment1IsWithinSegment2"
 
 export async function storyboardSegmentToVideoFile({
   clap,
@@ -31,13 +29,13 @@ export async function storyboardSegmentToVideoFile({
     outputVideoFormat: "mp4",
   })
 
-  const interfaceSegments = clap.segments.filter(s =>
-    // nope, not all interfaces asset have the assetUrl
-    // although in the future.. we might want to
-    // s.assetUrl.startsWith("data:text/") &&
-    s.category === "interface" &&
-    startOfSegment1IsWithinSegment2(s, segment)
+  const interfaceSegments = filterSegments(
+    ClapSegmentFilteringMode.START,
+    segment,
+    clap.segments,
+    ClapSegmentCategory.INTERFACE
   )
+
   console.log(`clapWithStoryboardsToVideoFile: got ${interfaceSegments.length} interface segments for shot ${segment.id} [${segment.startTimeInMs}:${segment.endTimeInMs}]`)
 
   const interfaceSegment = interfaceSegments.at(0)
@@ -60,12 +58,12 @@ export async function storyboardSegmentToVideoFile({
     storyboardSegmentVideoFilePath = videoSegmentWithOverlayFilePath
   }
 
-
-  const dialogueSegments = clap.segments.filter(s =>
-    s.assetUrl.startsWith("data:audio/") &&
-    s.category === "dialogue" &&
-    startOfSegment1IsWithinSegment2(s, segment)
-  )
+  const dialogueSegments = filterSegments(
+    ClapSegmentFilteringMode.START,
+    segment,
+    clap.segments,
+    ClapSegmentCategory.DIALOGUE
+  ).filter(s => s.assetUrl.startsWith("data:audio/"))
 
   console.log(`clapWithStoryboardsToVideoFile: got ${dialogueSegments.length} dialogue segments for shot ${segment.id} [${segment.startTimeInMs}:${segment.endTimeInMs}]`)
   
