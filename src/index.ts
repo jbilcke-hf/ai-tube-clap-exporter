@@ -69,13 +69,15 @@ app.post("/", async (req, res) => {
       let fileData = Buffer.concat(data)
 
       const clap: ClapProject = await parseClap(new Blob([fileData]));
-      console.log("got a clap project:", clap)
+
+      // not! that is too large!!!
+      // console.log("got a clap project:", clap)
 
       const {
         tmpWorkDir,
         outputFilePath,
       } = await clapToTmpVideoFilePath({ clap, format })
-      console.log(`got an output ${format} file at:`, outputFilePath)
+      // console.log(`got an output ${format} file at:`, outputFilePath)
 
       res.download(outputFilePath, async () => {
         // clean-up after ourselves (we clear the whole tmp directory)
