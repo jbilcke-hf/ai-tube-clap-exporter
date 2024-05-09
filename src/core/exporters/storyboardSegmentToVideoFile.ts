@@ -30,7 +30,7 @@ export async function storyboardSegmentToVideoFile({
   })
 
   const interfaceSegments = filterSegments(
-    ClapSegmentFilteringMode.START,
+    ClapSegmentFilteringMode.BOTH,
     segment,
     clap.segments,
     ClapSegmentCategory.INTERFACE
@@ -59,7 +59,7 @@ export async function storyboardSegmentToVideoFile({
   }
 
   const dialogueSegments = filterSegments(
-    ClapSegmentFilteringMode.START,
+    ClapSegmentFilteringMode.BOTH,
     segment,
     clap.segments,
     ClapSegmentCategory.DIALOGUE

@@ -24,16 +24,19 @@ export async function videoSegmentToVideoFile({
     join(outputDir, `tmp_asset_${segment.id}.${base64Info.extension}`)
   )
   const interfaceSegments = filterSegments(
-    ClapSegmentFilteringMode.START,
+    ClapSegmentFilteringMode.BOTH,
     segment,
     clap.segments,
     ClapSegmentCategory.INTERFACE
   )
   
+  console.log(`clapWithVideoToVideoFile: got ${interfaceSegments.length} interface segments for shot ${segment.id} [${segment.startTimeInMs}:${segment.endTimeInMs}]`)
+
   const interfaceSegment = interfaceSegments.at(0)
   if (interfaceSegment) {
     // here we are free to use mp4, since this is an internal intermediary format
     const videoSegmentWithOverlayFilePath = join(outputDir, `tmp_asset_${segment.id}_with_interface.mp4`)
+    
     await addTextToVideo({
       inputVideoPath: videoSegmentFilePath,
       outputVideoPath: videoSegmentWithOverlayFilePath,
@@ -49,11 +52,11 @@ export async function videoSegmentToVideoFile({
   }
 
   const dialogueSegments = filterSegments(
-    ClapSegmentFilteringMode.START,
+    ClapSegmentFilteringMode.BOTH,
     segment,
     clap.segments,
     ClapSegmentCategory.DIALOGUE
-  ).map(s => s.assetUrl.startsWith("data:audio/"))
+  ).filter(s => s.assetUrl.startsWith("data:audio/"))
 
   const dialogueSegment = dialogueSegments.at(0)
   if (dialogueSegment) {
