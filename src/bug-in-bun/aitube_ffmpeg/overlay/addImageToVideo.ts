@@ -36,14 +36,12 @@ export async function addImageToVideo({
 
   // Return a promise that resolves with the path to the output video
   return new Promise((resolve, reject) => {
-    ffmpeg(inputVideoPath)
+    ffmpeg()
+      .input(inputVideoPath)
       .input(inputImagePath)
       .complexFilter([
-        `scale=${width}:${height}`, // Scale video
-        {
-          filter: 'overlay', // Overlay image on scaled video
-          options: { x: '0', y: '0' }
-        }
+        `[0:v]scale=${width}:${height}[scaled]`, // Scale input video
+        `[scaled][1:v]overlay=0:0` // Overlay image
       ])
       .on("error", (err) => {
         reject(new Error(`Error processing video: ${err.message}`));
