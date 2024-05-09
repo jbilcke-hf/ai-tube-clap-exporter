@@ -13,8 +13,13 @@ RUN apk add alpine-sdk pkgconfig
 # For FFMPEG and gl concat
 RUN apk add curl python3 python3-dev libx11-dev libsm-dev libxrender libxext-dev mesa-dev xvfb libxi-dev glew-dev
 
+# For fonts, emojis etc
+RUN apk add font-terminus font-noto font-noto-cjk font-noto-extra font-arabic-misc 
+RUN apk add font-inconsolata font-dejavu font-awesome 
+RUN apk add ttf-opensans
+
 # For Puppeteer
-RUN apk add build-base gcompat udev ttf-opensans chromium
+RUN apk add build-base gcompat udev chromium
 
 RUN apk add ffmpeg
 

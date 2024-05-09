@@ -3,9 +3,10 @@ export type TextOverlayStyle =
   | "outline"
   | "highlight"
 
+// https://wiki.alpinelinux.org/wiki/Fonts
 export type TextOverlayFont =
-  | "Montserrat"
-  | "Sofia"
+  | "Noto"
+  | "Inconsolata"
 
 export type TextOverlayFontWeight =
   | 100

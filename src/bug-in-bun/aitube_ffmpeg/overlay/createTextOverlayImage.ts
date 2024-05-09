@@ -7,7 +7,7 @@ import { htmlToBase64Png } from "./htmlToBase64Png"
 export async function createTextOverlayImage({
   text = "",
   textStyle = "outline",
-  fontFamily = "Montserrat",
+  fontFamily = "Noto",
 
   // the unit is vh (so `fontSize: 4` = 4% of the window height)
   fontSize = 3,
