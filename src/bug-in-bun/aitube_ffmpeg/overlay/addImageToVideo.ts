@@ -8,12 +8,16 @@ import { getRandomDirectory } from "@aitube/io"
 type AddImageToVideoParams = {
   inputVideoPath: string;
   inputImagePath: string;
+  width: number
+  height: number
   outputVideoPath?: string;
 };
 
 export async function addImageToVideo({
   inputVideoPath,
   inputImagePath,
+  width,
+  height,
   outputVideoPath,
 }: AddImageToVideoParams): Promise<string> {
   // Verify that the input files exist
@@ -35,9 +39,10 @@ export async function addImageToVideo({
     ffmpeg(inputVideoPath)
       .input(inputImagePath)
       .complexFilter([
+        `scale=${width}:${height}`, // Scale video
         {
-          filter: "overlay",
-          options: { x: "0", y: "0" }, // Overlay on the entire video frame
+          filter: 'overlay', // Overlay image on scaled video
+          options: { x: '0', y: '0' }
         }
       ])
       .on("error", (err) => {

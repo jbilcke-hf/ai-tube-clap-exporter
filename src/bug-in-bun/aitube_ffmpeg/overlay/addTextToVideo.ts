@@ -34,6 +34,8 @@ export async function addTextToVideo({
   await addImageToVideo({
     inputVideoPath,
     inputImagePath: temporaryImageOverlayFilePath,
+    width,
+    height,
     outputVideoPath,
   })
 

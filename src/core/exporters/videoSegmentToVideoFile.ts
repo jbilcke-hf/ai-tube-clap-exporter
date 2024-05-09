@@ -4,7 +4,7 @@ import { ClapProject, ClapSegment, ClapSegmentCategory, ClapSegmentFilteringMode
 import { extractBase64 } from "@aitube/encoders"
 import { deleteFile, writeBase64ToFile } from "@aitube/io"
 // import { addTextToVideo, concatenateVideosWithAudio } from "@aitube/ffmpeg"
-import { addTextToVideo, concatenateVideosWithAudio } from "../../bug-in-bun/aitube_ffmpeg"
+import { addTextToVideo, concatenateVideosWithAudio, scaleVideo } from "../../bug-in-bun/aitube_ffmpeg"
 
 export async function videoSegmentToVideoFile({
   clap,
