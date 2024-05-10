@@ -19,16 +19,21 @@ export async function getMediaInfo(input: string): Promise<MediaMetadata> {
   // If the input is a base64 string
   if (input.startsWith("data:")) {
     // Extract the base64 content
-    const base64Content = input.split(";base64,").pop();
-    if (!base64Content) {
-      throw new Error("Invalid base64 data");
-    }
+      // Extract the base64 content
+      const [head, tail] = input.split(";base64,")
+      if (!tail) {
+        throw new Error("Invalid base64 data");
+      }
+
+    const extension = head.split("/").pop() || ""
+    const base64Content = tail || ""
 
     // Decode the base64 content to a buffer
-    const buffer = Buffer.from(base64Content, 'base64');
+    const buffer = Buffer.from(base64Content, 'base64')
 
     // Generate a temporary file name
-    const tempFileName = join(tmpdir(), `temp-media-${Date.now()}`);
+    const tempFileName = join(tmpdir(), `temp-media-${Date.now()}.${extension}`);
+
 
     // Write the buffer to a temporary file
     await writeFile(tempFileName, buffer);
