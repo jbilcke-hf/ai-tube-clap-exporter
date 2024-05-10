@@ -136,6 +136,7 @@ export const concatenateVideosWithAudio = async ({
     }
 
 
+    /*
     console.log("concatenateVideosWithAudio: DEBUG:", {
       videoTracksVolume,
       audioTrackVolume,
@@ -147,6 +148,7 @@ export const concatenateVideosWithAudio = async ({
       // additionalAudioVolume,
       finalOutputFilePath
      })
+     */
 
     // Set up event handlers for ffmpeg processing
     const promise = new Promise<string>((resolve, reject) => {

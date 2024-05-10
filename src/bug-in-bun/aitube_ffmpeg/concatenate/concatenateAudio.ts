@@ -27,7 +27,7 @@ export async function concatenateAudio({
   audioTracks = [],
   audioFilePaths = [],
   crossfadeDurationInSec = 10,
-  outputFormat = "wav"
+  outputFormat = "mp3"
 }: ConcatenateAudioOptions): Promise<ConcatenateAudioOutput> {
   if (!Array.isArray(audioTracks)) {
     throw new Error("Audios must be provided in an array");
@@ -41,7 +41,7 @@ export async function concatenateAudio({
   if (audioTracks.length === 1 && audioTracks[0]) {
     const audioTrack = audioTracks[0]
     const outputFilePath = path.join(tempDir, `audio_0.${outputFormat}`)
-    await writeBase64ToFile(addBase64Header(audioTrack, "wav"), outputFilePath)
+    await writeBase64ToFile(addBase64Header(audioTrack, outputFormat), outputFilePath)
 
     // console.log("  |- there is only one track! so.. returning that")
     const { durationInSec } = await getMediaInfo(outputFilePath)
@@ -57,8 +57,8 @@ export async function concatenateAudio({
     let i = 0
     for (const track of audioTracks) {
       if (!track) { continue }
-      const audioFilePath = path.join(tempDir, `audio_${++i}.wav`);
-      await writeBase64ToFile(addBase64Header(track, "wav"), audioFilePath)
+      const audioFilePath = path.join(tempDir, `audio_${++i}.${outputFormat}`);
+      await writeBase64ToFile(addBase64Header(track, outputFormat), audioFilePath)
       
       audioFilePaths.push(audioFilePath);
     }

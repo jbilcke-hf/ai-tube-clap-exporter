@@ -8,12 +8,14 @@ import {
   concatenateVideosWithAudio,
   defaultExportFormat,
   type SupportedExportFormat,
-  type ConcatenateAudioOutput
+  type ConcatenateAudioOutput,
+  getMediaInfo
 // } from "@aitube/ffmpeg"
 } from "./bug-in-bun/aitube_ffmpeg"
 
 import { clapWithStoryboardsToVideoFile } from "./core/exporters/clapWithStoryboardsToVideoFile"
 import { clapWithVideosToVideoFile } from "./core/exporters/clapWithVideosToVideoFile"
+import { extractBase64 } from "@aitube/encoders"
 
 /**
  * Generate a .mp4 video inside a directory (if none is provided, it will be created in /tmp)
@@ -52,6 +54,14 @@ export async function clapToTmpVideoFilePath({
 
   const canUseVideos = videoSegments.length > 0
   const canUseStoryboards = !canUseVideos && storyboardSegments.length > 0
+
+  // we count the duration of the whole video
+  let totalDurationInMs = 0
+  clap.segments.forEach(s => {
+    if (s.endTimeInMs > totalDurationInMs) {
+      totalDurationInMs = s.endTimeInMs
+    }
+  })
 
   let videoFilePaths: string[] = []
 
@@ -103,13 +113,38 @@ export async function clapToTmpVideoFilePath({
 
   console.log(`clapToTmpVideoFilePath: got ${musicSegments.length} music segments in total`)
   
+  // note: once we start with a certain type eg. mp3, there is no going to back
+  // another format like wav, we can't concatenate them together (well, not yet)
+  let detectedMusicTrackFormat = ''
+
+  // we count how much music has been generated
+  // if it is not enough to fill the full video, we will loop it (using cross-fading)
+  let availableMusicDurationInMs = 0
+
   for (const segment of musicSegments) {
-    audioTracks.push(
-      await writeBase64ToFile(
-        segment.assetUrl,
-        join(outputDir, `tmp_asset_${segment.id}.wav`)
-      )
+    const analysis = extractBase64(segment.assetUrl)
+    if (!detectedMusicTrackFormat) {
+      detectedMusicTrackFormat = analysis.extension
+    } else if (detectedMusicTrackFormat !== analysis.extension) {
+      throw new Error(`fatal error: concatenating a mixture of ${detectedMusicTrackFormat} and ${analysis.extension} tracks isn't supported yet`)
+    }
+
+    const { durationInMs, hasAudio } = await getMediaInfo(segment.assetUrl)
+
+    // we have to skip silent music tracks
+    if (!hasAudio) {
+      console.log(`skipping a silent music track`)
+      continue
+    }
+
+    const newTrackFileName = await writeBase64ToFile(
+      segment.assetUrl,
+      join(outputDir, `tmp_asset_${segment.id}.${analysis.extension}`)
     )
+
+    audioTracks.push(newTrackFileName)
+
+    availableMusicDurationInMs += durationInMs
   }
 
   let concatenatedAudio: ConcatenateAudioOutput | undefined = undefined
@@ -117,10 +152,37 @@ export async function clapToTmpVideoFilePath({
   if (audioTracks.length > 0) {
     console.log(`clapToTmpVideoFilePath: calling concatenateAudio over ${audioTracks.length} audio tracks`)
     
+    if (!detectedMusicTrackFormat) {
+      throw new Error(`uh that's weird, we couldn't detect the audio type`)
+    }
+
+    const availableMusicTracks = [...audioTracks]
+
+    // if we don't have enough music audio content
+    while (availableMusicDurationInMs < totalDurationInMs) {
+      let trackToUse = availableMusicTracks.shift()
+
+      // abort if there are no available tracks (for some reason)
+      if (!trackToUse) { break }
+
+      availableMusicTracks.push(trackToUse)
+
+      // we artificially duplicate it (note: this will be cross-faded)
+      const { durationInMs } = await getMediaInfo(trackToUse)
+
+      // let's abord if we have bad data
+      if (!durationInMs || durationInMs < 1000) { break }
+ 
+      audioTracks.push(trackToUse)
+  
+      availableMusicDurationInMs += durationInMs
+    }
+
     concatenatedAudio = await concatenateAudio({
-      output: join(outputDir, `tmp_asset_concatenated_audio.wav`),
+      output: join(outputDir, `tmp_asset_concatenated_audio.${detectedMusicTrackFormat}`),
       audioTracks,
-      crossfadeDurationInSec: 2 // 2 seconds
+      crossfadeDurationInSec: 2, // 2 seconds
+      outputFormat: detectedMusicTrackFormat
     })
     console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
   }
