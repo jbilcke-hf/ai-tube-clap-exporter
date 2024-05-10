@@ -21,7 +21,7 @@ RUN apk add ttf-opensans
 # For Puppeteer
 RUN apk add build-base gcompat udev chromium
 
-RUN apk add ffmpeg
+RUN apk add --no-cache ffmpeg
 
 # Set up a new user named "user" with user ID 1000
 RUN adduser --disabled-password --uid 1001 user
