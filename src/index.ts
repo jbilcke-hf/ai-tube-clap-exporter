@@ -82,7 +82,7 @@ app.post("/", async (req, res) => {
       res.download(outputFilePath, async () => {
         // clean-up after ourselves (we clear the whole tmp directory)
         await deleteFile(tmpWorkDir)
-        console.log("cleared the temporary folder")
+        // console.log("cleared the temporary folder")
       })
       return
     } catch (err) {

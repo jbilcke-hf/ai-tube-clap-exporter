@@ -41,6 +41,7 @@ export async function clapToTmpVideoFilePath({
   tmpWorkDir: string
   outputFilePath: string
 }> {
+  console.log(`clapToTmpVideoFilePath()`)
 
   // in case we have an issue with the format
   if (format !== "mp4" && format !== "webm") {
@@ -104,7 +105,7 @@ export async function clapToTmpVideoFilePath({
 
   console.log(`clapToTmpVideoFilePath: concatenatedVideosNoMusic`, concatenatedVideosNoMusic)
   
-  const audioTracks: string[] = []
+  const musicFilePaths: string[] = []
 
   const musicSegments = clap.segments.filter(s =>
       s.category === ClapSegmentCategory.MUSIC &&
@@ -137,56 +138,67 @@ export async function clapToTmpVideoFilePath({
       continue
     }
 
-    const newTrackFileName = await writeBase64ToFile(
+    const newMusicFilePath = await writeBase64ToFile(
       segment.assetUrl,
       join(outputDir, `tmp_asset_${segment.id}.${analysis.extension}`)
     )
 
-    audioTracks.push(newTrackFileName)
+    // console.log("wrote music to " + newMusicFilePath)
+    musicFilePaths.push(newMusicFilePath)
 
     availableMusicDurationInMs += durationInMs
   }
 
   let concatenatedAudio: ConcatenateAudioOutput | undefined = undefined
 
-  if (audioTracks.length > 0) {
-    console.log(`clapToTmpVideoFilePath: calling concatenateAudio over ${audioTracks.length} audio tracks`)
+  if (musicFilePaths.length > 0) {
+    // console.log(`clapToTmpVideoFilePath: calling concatenateAudio over ${musicFilePaths.length} audio tracks`)
     
     if (!detectedMusicTrackFormat) {
       throw new Error(`uh that's weird, we couldn't detect the audio type`)
     }
 
-    const availableMusicTracks = [...audioTracks]
+    const availableMusicFilePaths = [...musicFilePaths]
 
     // if we don't have enough music audio content
     while (availableMusicDurationInMs < totalDurationInMs) {
-      let trackToUse = availableMusicTracks.shift()
+      let musicFilePathToRepeat = availableMusicFilePaths.shift()
 
       // abort if there are no available tracks (for some reason)
-      if (!trackToUse) { break }
+      if (!musicFilePathToRepeat) { break }
 
-      availableMusicTracks.push(trackToUse)
+      availableMusicFilePaths.push(musicFilePathToRepeat)
 
       // we artificially duplicate it (note: this will be cross-faded)
-      const { durationInMs } = await getMediaInfo(trackToUse)
+      const { durationInMs } = await getMediaInfo(musicFilePathToRepeat)
 
       // let's abord if we have bad data
       if (!durationInMs || durationInMs < 1000) { break }
  
-      audioTracks.push(trackToUse)
+      musicFilePaths.push(musicFilePathToRepeat)
   
       availableMusicDurationInMs += durationInMs
     }
 
+    /*
+    console.log("DEBUG:", {
+      musicFilePaths,
+      availableMusicFilePaths,
+      availableMusicDurationInMs
+    })
+    */
+
+
     concatenatedAudio = await concatenateAudio({
       output: join(outputDir, `tmp_asset_concatenated_audio.${detectedMusicTrackFormat}`),
-      audioTracks,
+      audioFilePaths: musicFilePaths,
       crossfadeDurationInSec: 2, // 2 seconds
       outputFormat: detectedMusicTrackFormat
     })
-    console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
+    // console.log(`clapToTmpVideoFilePath: concatenatedAudio = ${concatenatedAudio}`)
   }
 
+  /*
   console.log(`calling concatenateVideosWithAudio: `, {
     output: join(outputDir, `final_video.${format}`),
     format,
@@ -196,6 +208,7 @@ export async function clapToTmpVideoFilePath({
     videoTracksVolume: concatenatedAudio ? 0.85 : 1.0,
     audioTrackVolume: concatenatedAudio ? 0.15 : 0.0, // let's keep the music volume low
   })
+  */
 
   const finalFilePathOfVideoWithMusic = await concatenateVideosWithAudio({
     output: join(outputDir, `final_video.${format}`),
@@ -211,14 +224,16 @@ export async function clapToTmpVideoFilePath({
   
   if (clearTmpFilesAtEnd) {
     // we delete all the temporary assets
-    console.log(`clapToTmpVideoFilePath: calling deleteFilesWithName(${outputDir}, 'tmp_asset_')`)
+    // console.log(`clapToTmpVideoFilePath: calling deleteFilesWithName(${outputDir}, 'tmp_asset_')`)
     await deleteFilesWithName(outputDir, `tmp_asset_`)
   }
 
+  /*
   console.log(`clapToTmpVideoFilePath: returning ${JSON.stringify( {
     tmpWorkDir: outputDir,
     outputFilePath: finalFilePathOfVideoWithMusic
   }, null, 2)}`)
+  */
 
   return {
     tmpWorkDir: outputDir,

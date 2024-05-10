@@ -41,21 +41,30 @@ export async function storyboardSegmentToVideoFile({
   const interfaceSegment = interfaceSegments.at(0)
   if (interfaceSegment) {
     // here we are free to use mp4, since this is an internal intermediary format
-    const videoSegmentWithOverlayFilePath = join(outputDir, `tmp_asset_${segment.id}_with_interface.mp4`)
+    let videoSegmentWithOverlayFilePath = join(outputDir, `tmp_asset_${segment.id}_with_interface.mp4`)
 
-    await addTextToVideo({
-      inputVideoPath: storyboardSegmentVideoFilePath,
-      outputVideoPath: videoSegmentWithOverlayFilePath,
-      text: interfaceSegment.assetUrl.startsWith("data:text/")
-        ? atob(extractBase64(interfaceSegment.assetUrl).data)
-        : interfaceSegment.assetUrl,
-      width: clap.meta.width,
-      height: clap.meta.height,
-    })
-
-    // we overwrite
-    await deleteFile(storyboardSegmentVideoFilePath)
-    storyboardSegmentVideoFilePath = videoSegmentWithOverlayFilePath
+    let success = false
+    // this can fail due to puppeteer
+    try {
+      await addTextToVideo({
+        inputVideoPath: storyboardSegmentVideoFilePath,
+        outputVideoPath: videoSegmentWithOverlayFilePath,
+        text: interfaceSegment.assetUrl.startsWith("data:text/")
+          ? atob(extractBase64(interfaceSegment.assetUrl).data)
+          : interfaceSegment.assetUrl,
+        width: clap.meta.width,
+        height: clap.meta.height,
+      })
+      success = true
+    } catch (err) {
+      console.error(`failed to add text to the video: ${err}`)
+      success = false
+    }
+    if (success) {
+      // we overwrite
+      await deleteFile(storyboardSegmentVideoFilePath)
+      storyboardSegmentVideoFilePath = videoSegmentWithOverlayFilePath
+    }
   }
 
   const dialogueSegments = filterSegments(

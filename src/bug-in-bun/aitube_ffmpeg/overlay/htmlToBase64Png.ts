@@ -30,11 +30,22 @@ export async function htmlToBase64Png({
   const browser = await puppeteer.launch({
     headless: true,
 
+    // for macOS do this (yeah.. with the "no quarantine"..)
+    // brew install chromium --no-quarantine
+    // and:
+    // which chromium
+    // to detect where the executable path is
+
     // apparently we need those, see:
     // https://unix.stackexchange.com/questions/694734/puppeteer-in-alpine-docker-with-chromium-headless-dosent-seems-to-work
-    executablePath: '/usr/bin/chromium-browser',
+    // https://stackoverflow.com/questions/59979188/error-failed-to-launch-the-browser-process-puppeteer
+    executablePath:
+    os.type() === "Darwin"
+    ? '/opt/homebrew/bin/chromium'
+    : '/usr/bin/chromium-browser',
+
     args: [
-      '--no-sandbox',
+      '--no-sandbox', // for alpine
       '--headless',
       '--disable-gpu',
       '--disable-dev-shm-usage'

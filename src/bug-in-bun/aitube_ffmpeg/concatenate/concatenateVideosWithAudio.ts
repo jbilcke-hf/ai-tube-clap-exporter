@@ -38,6 +38,7 @@ export const concatenateVideosWithAudio = async ({
   asBase64 = false,
 }: ConcatenateVideoWithAudioOptions): Promise<string> => {
 
+  console.log(`concatenateVideosWithAudio()`)
   try {
     // Prepare temporary directories
     const tempDir = await getRandomDirectory()
@@ -113,6 +114,7 @@ export const concatenateVideosWithAudio = async ({
           '-map', '[a]',
           '-c:v', 'copy',
           '-c:a', 'aac',
+          '-shortest'
         ]);
       } else {
         // console.log(`concatenateVideosWithAudio: case 2: additional audio was provided, but we don't already have audio: we overwrite`)
@@ -123,6 +125,7 @@ export const concatenateVideosWithAudio = async ({
           '-map', '1:a',
           '-c:v', 'copy',
           '-c:a', 'aac',
+          '-shortest'
         ]);
       }
     } else {
@@ -135,7 +138,6 @@ export const concatenateVideosWithAudio = async ({
       ]);
     }
 
-
     /*
     console.log("concatenateVideosWithAudio: DEBUG:", {
       videoTracksVolume,
@@ -147,9 +149,9 @@ export const concatenateVideosWithAudio = async ({
       audioFilePath,
       // additionalAudioVolume,
       finalOutputFilePath
-     })
-     */
-
+    })
+    */
+ 
     // Set up event handlers for ffmpeg processing
     const promise = new Promise<string>((resolve, reject) => {
       ffmpegCommand.on('start', function(commandLine) {
