@@ -47,45 +47,52 @@ export async function htmlToBase64Png({
     args: [
       '--no-sandbox', // for alpine
       '--headless',
+      '--no-zygote',
+      // '--single-process',
       '--disable-gpu',
       '--disable-dev-shm-usage'
     ]
   })
 
-  const page = await browser.newPage()
-
-  page.setViewport({
-    width,
-    height,
-  })
-
   try {
-    await page.setContent(html)
+    const page = await browser.newPage()
 
-    const content = await page.$("body")
-
-    if (!content) { throw new Error (`coudln't find body content`) }
-    
-    const buffer = await content.screenshot({
-      path: outputImagePath,
-      omitBackground: true,
-      captureBeyondViewport: false,
-
-      // we must keep PNG here, if we want transparent backgrounds
-      type: "png",
-
-      // we should leave it to binary (the default value) if we save to a file
-      // encoding: "binary", // "base64",
+    page.setViewport({
+      width,
+      height,
     })
 
-    return {
-      filePath: outputImagePath,
-      buffer
+    try {
+      await page.setContent(html)
+
+      const content = await page.$("body")
+
+      if (!content) { throw new Error (`coudln't find body content`) }
+      
+      const buffer = await content.screenshot({
+        path: outputImagePath,
+        omitBackground: true,
+        captureBeyondViewport: false,
+
+        // we must keep PNG here, if we want transparent backgrounds
+        type: "png",
+
+        // we should leave it to binary (the default value) if we save to a file
+        // encoding: "binary", // "base64",
+      })
+
+      return {
+        filePath: outputImagePath,
+        buffer
+      }
+    } catch (err) {
+      throw err
+    } finally {
+      await page.close()
     }
   } catch (err) {
     throw err
   } finally {
-    await page.close()
     await browser.close()
   }
 };
