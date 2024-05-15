@@ -45,7 +45,8 @@ app.get("/", async (req, res) => {
 
 // the export robot has only one job: to export .clap files
 app.post("/", async (req, res) => {
-      
+  console.log("receiving POST request")
+
   const qs = queryString.parseUrl(req.url || "")
   const query = (qs || {}).query
 
@@ -64,20 +65,20 @@ app.post("/", async (req, res) => {
   });
 
   req.on("end", async () => {
-    let clapProject: ClapProject
     try {
       let fileData = Buffer.concat(data)
 
       const clap: ClapProject = await parseClap(new Blob([fileData]));
 
       // not! that is too large!!!
-      // console.log("got a clap project:", clap)
+      console.log("got a clap project:", clap?.meta?.description)
 
       const {
         tmpWorkDir,
         outputFilePath,
       } = await clapToTmpVideoFilePath({ clap, format })
-      // console.log(`got an output ${format} file at:`, outputFilePath)
+      
+      console.log(`got an output ${format} file at:`, outputFilePath)
 
       res.download(outputFilePath, async () => {
         // clean-up after ourselves (we clear the whole tmp directory)
@@ -86,7 +87,7 @@ app.post("/", async (req, res) => {
       })
       return
     } catch (err) {
-      console.error(`failed to parse the request: ${err}`)
+      console.log(`failed to process the request\n${err}`)
       res.status(500)
       res.write(JSON.stringify({ "error": `${err}` }))
       res.end()
