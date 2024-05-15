@@ -45,6 +45,9 @@ COPY --chown=user .env /app
 
 RUN ffmpeg -version
 
+# To manage the Node process
+RUN npm install pm2@latest -g
+
 # Copy the current directory contents into the container at /app setting the owner to the user
 COPY --chown=user . /app
 
@@ -54,4 +57,4 @@ EXPOSE 7860
 
 # we can't use this (it time out)
 # CMD [ "xvfb-run", "-s", "-ac -screen 0 1920x1080x24", "npm", "run", "start" ]
-CMD [ "npm", "run", "start" ]
+CMD [ "pm2-runtime", "ecosystem.config.js" ]
