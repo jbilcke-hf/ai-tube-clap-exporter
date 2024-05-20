@@ -31,19 +31,7 @@ app.use(express.urlencoded({ limit: '200mb', extended: true }));
 app.get("/", async (req, res) => {
   res.status(200)
 
-  const oldDocumentation = `<html>
-  <head></head>
-  <body>
-    <p style="color: black; font-family: monospace;">
-      This API is a component of the Clap-to-MP4 rendering service provided by AiTube.<br/>
-      It is used for instance by the Stories Factory.
-    </p>
-  </body>
-<html>`
-
-// let's wait to put this on a separate API endpoint,
-// for mainstream users
-const stylishDocumentation = `<html>
+  const documentation = `<html>
 <head></head>
 <body style="display: flex;
 align-items: center;
@@ -76,7 +64,7 @@ $ curl -o movie.mp4 \\
 </body>
 <html>`
 
-  res.write(oldDocumentation)
+  res.write(documentation)
   res.end()
 })
 
