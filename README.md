@@ -1,5 +1,5 @@
 ---
-title: AI Tube Clap Exporter
+title: AI Tube Clap Exporter API
 emoji: 🍿🤖
 colorFrom: red
 colorTo: blue
