@@ -11,7 +11,7 @@ import { defaultExportFormat, type SupportedExportFormat } from "./bug-in-bun/ai
 import { deleteFile } from "@aitube/io"
 
 const app = express()
-const port = 7860
+const port = 3000
 
 process.on('unhandledRejection', (reason: string, p: Promise<any>) => {
   console.error('Unhandled Rejection at:', p, 'reason:', reason);
@@ -30,7 +30,8 @@ app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
 app.get("/", async (req, res) => {
   res.status(200)
-  res.write(`<html>
+
+  const oldDocumentation = `<html>
   <head></head>
   <body>
     <p style="color: black; font-family: monospace;">
@@ -38,7 +39,44 @@ app.get("/", async (req, res) => {
       It is used for instance by the Stories Factory.
     </p>
   </body>
-<html>`)
+<html>`
+
+// let's wait to put this on a separate API endpoint,
+// for mainstream users
+const stylishDocumentation = `<html>
+<head></head>
+<body style="display: flex;
+align-items: center;
+justify-content: center;
+
+background-color: #000000;
+opacity: 1;
+background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #000000 7px ), repeating-linear-gradient( #34353655, #343536 );
+
+">
+  <div style="">
+    <p style="">
+      <h1 style="
+      color: rgba(255,255,255,0.9);
+      font-size: 4.5vw;
+      text-shadow: #000 1px 0 3px;
+      font-family: Helvetica Neue, Helvetica, sans-serif;
+      font-weight: 100;
+      ">Clap Exporter <span style="font-weight: 400">API</span></h1>
+
+      <pre style="color: rgba(255,255,255,0.7); font-size: 2vw; text-shadow: #000 1px 0 3px;  font-family: monospace;">
+$ curl -o movie.mp4 \\
+     -X POST \\
+     --data-binary @path/to/movie.clap \\
+     https://jbilcke-hf-ai-tube-clap-exporter.hf.space?f=mp4
+      </pre>
+      <br/>
+    </p>
+  </div>
+</body>
+<html>`
+
+  res.write(oldDocumentation)
   res.end()
 })
 

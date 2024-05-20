@@ -50,7 +50,7 @@ COPY --chown=user . /app
 
 RUN npm ci
 
-EXPOSE 7860
+EXPOSE 3000
 
 # we can't use this (it time out)
 # CMD [ "xvfb-run", "-s", "-ac -screen 0 1920x1080x24", "npm", "run", "start" ]

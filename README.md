@@ -5,7 +5,7 @@ colorFrom: red
 colorTo: blue
 sdk: docker
 pinned: false
-app_port: 7860
+app_port: 3000
 ---
 
 Export a full .clap (with all its assets already in) to a video
