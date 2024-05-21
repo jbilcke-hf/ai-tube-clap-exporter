@@ -8,12 +8,12 @@
     "dev": "tsx src/index.ts",
     "docker": "npm run docker:build && npm run docker:run",
     "docker:build": "docker build -t ai-tube-clap-exporter .",
-    "docker:run": "docker run -it -p 7860:7860 ai-tube-clap-exporter"
+    "docker:run": "docker run -it -p 3000:3000 ai-tube-clap-exporter"
   },
   "author": "Julian Bilcke <julian.bilcke@huggingface.co>",
   "license": "Apache License",
   "dependencies": {
-    "@aitube/clap": "0.0.19",
+    "@aitube/clap": "0.0.20",
     "@aitube/encoders": "0.0.0",
     "@aitube/io": "0.0.0",
     "dotenv": "^16.4.5",
