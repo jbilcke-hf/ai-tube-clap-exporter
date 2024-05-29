@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs"
 import path from "node:path"
 
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg"
 import { getRandomDirectory } from "@aitube/io"
 
@@ -30,7 +30,7 @@ export async function concatenateVideos({
   // Create a temporary working directory
   const tempDir = await getRandomDirectory()
 
-  const filePath = output ? output : path.join(tempDir, `${uuidv4()}.mp4`)
+  const filePath = output ? output : path.join(tempDir, `${UUID()}.mp4`)
 
   if (!filePath) {
     throw new Error("Failed to generate a valid temporary file path")

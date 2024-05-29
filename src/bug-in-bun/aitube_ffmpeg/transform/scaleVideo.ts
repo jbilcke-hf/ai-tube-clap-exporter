@@ -2,8 +2,8 @@ import { rm, mkdtemp, writeFile, readFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import { v4 as uuidv4 } from "uuid"
 import ffmpeg from 'fluent-ffmpeg'
+import { UUID } from '@aitube/clap'
 
 export type ScaleVideoParams = {
   input: string;
@@ -34,7 +34,7 @@ export async function scaleVideo({
   debug = false
 }: ScaleVideoParams): Promise<string> {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), "ffmpeg-"));
-  const tempOutPath = path.join(tempDir, `${uuidv4()}.mp4`);
+  const tempOutPath = path.join(tempDir, `${UUID()}.mp4`);
   
   let inputPath;
   if (input.startsWith('data:')) {
@@ -43,7 +43,7 @@ export async function scaleVideo({
     if (!base64Content) {
       throw new Error('Invalid base64 input provided');
     }
-    inputPath = path.join(tempDir, `${uuidv4()}.mp4`);
+    inputPath = path.join(tempDir, `${UUID()}.mp4`);
     await writeFile(inputPath, base64Content, 'base64');
   } else {
     inputPath = input;

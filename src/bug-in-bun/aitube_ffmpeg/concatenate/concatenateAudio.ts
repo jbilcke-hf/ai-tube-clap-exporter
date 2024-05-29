@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs"
 import path from "node:path"
 
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg"
 import { getRandomDirectory, removeTemporaryFiles, writeBase64ToFile } from "@aitube/io"
 import { addBase64Header } from "@aitube/encoders"
@@ -70,7 +70,7 @@ export async function concatenateAudio({
     // TODO: convert this to an async filter using promises
     audioFilePaths = audioFilePaths.filter((audio) => existsSync(audio))
 
-    const outputFilePath = output ?? path.join(tempDir, `${uuidv4()}.${outputFormat}`);
+    const outputFilePath = output ?? path.join(tempDir, `${UUID()}.${outputFormat}`);
   
     let filterComplex = "";
     let prevLabel = "0";

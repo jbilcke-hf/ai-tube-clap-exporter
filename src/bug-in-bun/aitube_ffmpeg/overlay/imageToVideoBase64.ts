@@ -1,8 +1,8 @@
 import { rm, writeFile, readFile } from "node:fs/promises"
 import path from "node:path"
 
-import { v4 as uuidv4 } from "uuid"
 import ffmpeg from "fluent-ffmpeg"
+import { UUID } from "@aitube/clap"
 import { getRandomDirectory } from "@aitube/io"
 
 /**
@@ -52,7 +52,7 @@ export async function imageToVideoBase64({
   // Decode the Base64 image and write it to a temporary file.
   const base64Data = inputImageInBase64.substring(inputImageInBase64.indexOf(',') + 1);
   const buffer = Buffer.from(base64Data, 'base64');
-  const inputImagePath = path.join(outputDir, `${uuidv4()}.png`);
+  const inputImagePath = path.join(outputDir, `${UUID()}.png`);
   await writeFile(inputImagePath, buffer);
 
   const inputImageDetails = await new Promise<ffmpeg.FfprobeData>((resolve, reject) => {
@@ -81,7 +81,7 @@ export async function imageToVideoBase64({
   }
 
   // Set the path for the output video.
-  outputFilePath = outputFilePath || path.join(outputDir, `output_${uuidv4()}.${outputVideoFormat}`);
+  outputFilePath = outputFilePath || path.join(outputDir, `output_${UUID()}.${outputVideoFormat}`);
 
   // we want to create a smooth Ken Burns effect
   const durationInSeconds = outputVideoDurationInMs / 1000;

@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs"
 import os from "node:os"
 import path from "node:path"
 
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 import puppeteer from "puppeteer"
 
 export async function htmlToBase64Png({
@@ -22,9 +22,9 @@ export async function htmlToBase64Png({
 
   // If no output path is provided, create a temporary file for output
   if (!outputImagePath) {
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), uuidv4()))
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), UUID()))
 
-    outputImagePath = path.join(tempDir, `${uuidv4()}.png`)
+    outputImagePath = path.join(tempDir, `${UUID()}.png`)
   }
 
   const browser = await puppeteer.launch({

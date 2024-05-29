@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs"
 import path from "node:path"
 
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg"
 import { getRandomDirectory, removeTemporaryFiles, writeBase64ToFile } from "@aitube/io"
 import { addBase64Header, extractBase64 } from "@aitube/encoders"
@@ -62,7 +62,7 @@ export const concatenateVideosAndMergeAudio = async ({
     videoFilePaths = videoFilePaths.filter((video) => existsSync(video))
 
     // The final output file path
-    const finalOutputFilePath = output ? output : path.join(tempDir, `${uuidv4()}.mp4`);
+    const finalOutputFilePath = output ? output : path.join(tempDir, `${UUID()}.mp4`);
 
     /*
     console.log("DEBUG:", {

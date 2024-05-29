@@ -3,7 +3,7 @@ import os from "node:os"
 import path from "node:path"
 
 import ffmpeg from "fluent-ffmpeg"
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 
 import { getMediaInfo } from "../analyze/getMediaInfo"
 
@@ -46,7 +46,7 @@ export async function createVideoFromFrames({
 
 
   // Create a temporary working directory
-  const tempDir = path.join(os.tmpdir(), uuidv4());
+  const tempDir = path.join(os.tmpdir(), UUID());
   await mkdir(tempDir);
 
    
@@ -57,7 +57,7 @@ export async function createVideoFromFrames({
     if (!base64Content) {
       throw new Error('Invalid base64 input provided');
     }
-    inputVideoToUseAsAudioFilePath = path.join(tempDir, `${uuidv4()}_audio_input.mp4`);
+    inputVideoToUseAsAudioFilePath = path.join(tempDir, `${UUID()}_audio_input.mp4`);
     await writeFile(inputVideoToUseAsAudioFilePath, base64Content, 'base64');
   } else {
     inputVideoToUseAsAudioFilePath = inputVideoToUseAsAudio;
@@ -84,7 +84,7 @@ export async function createVideoFromFrames({
     }
   }
 
-  const outputVideoFilePath = outputVideoPath ?? path.join(tempDir, `${uuidv4()}.mp4`);
+  const outputVideoFilePath = outputVideoPath ?? path.join(tempDir, `${UUID()}.mp4`);
 
   if (debug) {
     console.log("      createVideoFromFrames(): outputOptions:", [

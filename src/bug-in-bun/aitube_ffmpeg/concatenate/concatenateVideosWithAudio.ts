@@ -2,7 +2,7 @@ import { existsSync } from "node:fs"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg"
 import { addBase64Header, extractBase64 } from "@aitube/encoders"
 import { getRandomDirectory, removeTemporaryFiles, writeBase64ToFile } from "@aitube/io"
@@ -81,7 +81,7 @@ export const concatenateVideosWithAudio = async ({
 
     // console.log(`concatenateVideosWithAudio: hasOriginalAudio = ${hasOriginalAudio}`)
 
-    const finalOutputFilePath = output || path.join(tempDir, `${uuidv4()}.${format}`);
+    const finalOutputFilePath = output || path.join(tempDir, `${UUID()}.${format}`);
 
     // console.log(`concatenateVideosWithAudio: finalOutputFilePath = ${finalOutputFilePath}`)
 

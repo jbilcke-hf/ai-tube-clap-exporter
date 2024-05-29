@@ -2,7 +2,7 @@ import { existsSync } from "node:fs"
 import path from "node:path"
 
 import ffmpeg from "fluent-ffmpeg"
-import { v4 as uuidv4 } from "uuid"
+import { UUID } from "@aitube/clap"
 import { getRandomDirectory } from "@aitube/io"
 
 type AddImageToVideoParams = {
@@ -31,7 +31,7 @@ export async function addImageToVideo({
   // If no output path is provided, create a temporary file for output
   if (!outputVideoPath) {
     const tempDir = await getRandomDirectory()
-    outputVideoPath = path.join(tempDir, `${uuidv4()}.mp4`);
+    outputVideoPath = path.join(tempDir, `${UUID()}.mp4`);
   }
 
   // Return a promise that resolves with the path to the output video

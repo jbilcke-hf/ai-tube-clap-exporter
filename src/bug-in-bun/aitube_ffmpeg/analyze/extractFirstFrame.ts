@@ -1,11 +1,11 @@
-import { promises as fs, existsSync } from 'node:fs';
-import path from 'node:path';
-import os from 'node:os';
+import { promises as fs, existsSync } from 'node:fs'
+import path from 'node:path'
+import os from 'node:os'
 
-import { v4 as uuidv4 } from 'uuid';
-import ffmpeg from 'fluent-ffmpeg';
+import { UUID } from '@aitube/clap'
+import ffmpeg from 'fluent-ffmpeg'
 
-const validFormats = ['jpeg', 'png', 'webp'];
+const validFormats = ['jpeg', 'png', 'webp']
 
 /**
  * Extract the first frame from a video
@@ -40,14 +40,14 @@ export async function extractFirstFrame({
     const extension = matches[1];
     const base64Content = matches[2];
     
-    videoFilePath = path.join(os.tmpdir(), `${uuidv4()}_inputVideo.${extension}`);
+    videoFilePath = path.join(os.tmpdir(), `${UUID()}_inputVideo.${extension}`);
     await fs.writeFile(videoFilePath, base64Content, 'base64');
   } else if (!existsSync(videoFilePath)) {
     throw new Error('Video file does not exist.');
   }
 
   // Create a temporary output file
-  const outputImagePath = path.join(os.tmpdir(), `${uuidv4()}.${outputFormat}`);
+  const outputImagePath = path.join(os.tmpdir(), `${UUID()}.${outputFormat}`);
 
   return new Promise((resolve, reject) => {
     ffmpeg()
