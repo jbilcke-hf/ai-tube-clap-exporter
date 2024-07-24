@@ -1,6 +1,6 @@
 {
   "name": "ai-tube-clap-exporter",
-  "version": "1.0.7",
+  "version": "1.1.2",
   "description": "API service to convert a .clap (will all its assets) to a video file",
   "main": "src/index.ts",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Julian Bilcke <julian.bilcke@huggingface.co>",
   "license": "Apache License",
   "dependencies": {
-    "@aitube/clap": "0.0.27",
+    "@aitube/clap": "0.1.2",
     "@aitube/encoders": "0.0.0",
     "@aitube/io": "0.0.1",
     "dotenv": "^16.4.5",
